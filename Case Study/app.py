@@ -6,6 +6,7 @@ from data_config import get_dataset_path, fetch_enrollment_records_from_csv, fet
 from data_cleaning import clean_data
 from datetime import datetime
 from report import create_dash_app_report
+import shutil
 
 app = Flask(__name__)
 app.secret_key = 'secret123'
@@ -69,9 +70,24 @@ def upload():
             return redirect(request.url)
 
         if file and allowed_file(file.filename):
-            file.save(dataset_path)
-            flash('CSV file uploaded successfully and is now active!')
-            last_updated = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            try:
+                # Save raw uploaded file temporarily
+                raw_filename = secure_filename(file.filename)
+                raw_path = os.path.join(CLEANED_FOLDER, f"temp_{raw_filename}")
+                file.save(raw_path)
+
+                # Clean the file
+                cleaned_path = clean_data(raw_path)
+
+                shutil.copy(cleaned_path, dataset_path)
+
+                flash('CSV file uploaded, cleaned, and is now active!')
+                last_updated = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+            except Exception as e:
+                flash(f"Data cleaning failed: {str(e)}")
+                return redirect(request.url)
+
             return render_template("upload.html", last_updated=last_updated)
 
         flash("Invalid file type. Please upload a .csv file.")
@@ -106,7 +122,7 @@ def clean():
 @app.route('/api/enrollment_data')
 def get_enrollment_data():
     file_path = get_dataset_path()
-    data = fetch_enrollment_records_from_csv(file_path)  # Changed this line
+    data = fetch_enrollment_records_from_csv(file_path) 
     data = fetch_summary_data_from_csv(file_path)
     return jsonify(data)
 
