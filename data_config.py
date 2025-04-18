@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import re
 
 def get_dataset_path(filename="Cleaned_School_DataSet.csv"):
     return os.path.join(os.path.dirname(__file__), 'static', filename)
@@ -19,22 +20,37 @@ def fetch_summary_data_from_csv(file_path):
     try:
         df = pd.read_csv(file_path)
 
-        total_male = df.filter(like='Male').sum().sum()
-        total_female = df.filter(like='Female').sum().sum()
-        total_enrollments = total_male + total_female
-        number_of_schools = df['BEIS School ID'].nunique()
-        regions_with_schools = df['Region'].nunique()
-        number_of_year_levels = 13  # K to G12
-        
+        male_cols = [col for col in df.columns if re.search(r'\bmale\b', col, re.IGNORECASE)]
+        female_cols = [col for col in df.columns if re.search(r'\bfemale\b', col, re.IGNORECASE)]
 
-        return {
+        for col in male_cols + female_cols:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+
+        total_male = df[male_cols].sum().sum()
+        total_female = df[female_cols].sum().sum()
+        total_enrollments = total_male + total_female
+
+        is_school_level = 'BEIS School ID' in df.columns
+        number_of_schools = df['BEIS School ID'].nunique() if is_school_level else None
+        number_of_year_levels = 13
+
+        # Try to find the 'Region' column regardless of casing
+        region_col = next((col for col in df.columns if col.strip().lower() == 'region'), None)
+        number_of_regions = df[region_col].nunique() if region_col else 0
+
+        summary = {
             'totalEnrollments': int(total_enrollments),
             'maleEnrollments': int(total_male),
             'femaleEnrollments': int(total_female),
-            'numberOfSchools': int(number_of_schools),
-            'regionsWithSchools': int(regions_with_schools),
-            'numberOfYearLevels': int(number_of_year_levels)
+            'numberOfYearLevels': number_of_year_levels,
+            'regionsWithSchools': int(number_of_regions)
         }
+
+        if is_school_level:
+            summary['numberOfSchools'] = int(number_of_schools)
+
+        return summary
+
     except Exception as e:
         print(f"Error processing summary data: {e}")
         return {}
