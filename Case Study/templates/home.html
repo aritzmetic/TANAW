@@ -1439,14 +1439,14 @@
 <main>
 <section id="welcome-section">
 <i class="fas fa-graduation-cap welcome-icons top-left"></i>
-<h2 id="welcome-message">Welcome back, Shu Mamamo!</h2>
+<h2 id="welcome-message">Welcome back, <span id="user-fullname">User</span>!</h2>
 <p>"Tanaw" provides a dynamic and insightful view of nationwide academic enrollment data, empowering educators and administrators to make informed decisions.</p>
 <i class="fas fa-chart-bar welcome-icons bottom-right"></i>
 </section>
 <section id="dashboard-main"> <div id="dashboard-upper"> <div class="dashboard-widget" id="user-profile"> <h4><i class="fas fa-user-circle" style="margin-right: 10px;"></i> Your Profile</h4>
-<div class="profile-info-item"><i class="fas fa-id-card-alt"></i> <strong>Name:</strong> <span id="profile-name">Shu Mamamo</span></div>
+<div class="profile-info-item"><i class="fas fa-id-card-alt"></i> <strong>Name:</strong> <span id="profile-name"></span></div>
 <div class="profile-info-item"><i class="fas fa-user-tag"></i> <strong>Role:</strong> <span id="profile-role">Administrator</span></div>
-<div class="profile-info-item"><i class="fas fa-envelope"></i> <strong>Email:</strong> <span id="profile-email">s.mamamo@deped.gov.ph</span></div>
+<div class="profile-info-item"><i class="fas fa-envelope"></i> <strong>Email:</strong> <span id="profile-email"></span></div>
 <div class="profile-info-item"><i class="fas fa-building"></i> <strong>Department:</strong> <span id="profile-department">Data Management Unit</span></div>
 <div class="profile-info-item"><i class="fas fa-user-check"></i> <strong>Status:</strong> <span id="profile-status">Active</span></div>
 <button onclick="window.location.href='/logout'" style="background: var(--gradient-blue);"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -1783,7 +1783,7 @@
             // Update Welcome Message
             const welcomeMessageElement = document.getElementById('welcome-message');
              if (welcomeMessageElement) {
-                 welcomeMessageElement.textContent = `Welcome back, ${firstName} ${lastName}!`;
+                 welcomeMessageElement.textContent = `Welcome back, <span id="user-fullname">User</span>!`;
              }
 
 
@@ -1817,5 +1817,21 @@
 
         });
     </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const fullName = (localStorage.getItem('firstName') || 'User') + ' ' + (localStorage.getItem('lastName') || '');
+        const email = localStorage.getItem('email') || 'Not Provided';
+
+        const welcomeEl = document.getElementById('user-fullname');
+        const nameEl = document.getElementById('profile-name');
+        const emailEl = document.getElementById('profile-email');
+
+        if (welcomeEl) welcomeEl.textContent = fullName;
+        if (nameEl) nameEl.textContent = fullName;
+        if (emailEl) emailEl.textContent = email;
+    });
+</script>
+
 </body>
 </html>
