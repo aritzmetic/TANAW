@@ -393,6 +393,11 @@
             align-items: flex-start;
         }
 
+        #data-cleaning {
+            position: relative;
+            z-index: 1000; /* Ensure it's above file-upload */
+        }
+        
         .upload-section {
             flex: 1;
             background-color: var(--deped-white);
@@ -436,7 +441,7 @@
 
         .file-input-button {
             display: inline-block;
-            padding: 12px 20px;
+            padding: 8px 20px;
             font-size: 1rem;
             border-radius: var(--border-radius-sm);
             border: 1px dashed var(--deped-blue);
@@ -445,6 +450,7 @@
             width: 100%;
             text-align: center;
             transition: var(--transition-default);
+            box-sizing: border-box;
         }
         .file-input-button i {
             margin-right: 8px;
@@ -457,7 +463,7 @@
 
         .file-name {
             display: block;
-            margin-top: 8px;
+            margin-bottom: 6px;
             font-size: 0.85rem;
             color: var(--text-light);
             min-height: 1.2em;
@@ -468,7 +474,7 @@
         /* General button styles for upload and rerun */
         .upload-section button[type="submit"],
         #rerun-container button {
-            padding: 12px 25px;
+            padding: 18px 25px;
             background-color: var(--deped-blue);
             color: var(--deped-yellow);
             border: none;
@@ -479,19 +485,25 @@
             transition: var(--transition-default), transform 0.1s ease;
             max-width: 350px; /* Apply max-width to all relevant buttons */
             width: 100%; /* Ensure they take full width up to max-width */
-            margin-top: 15px;
-            box-shadow: var(--box-shadow-sm);
-             display: inline-flex; /* Use flex for centering icon/text */
-             align-items: center;
-             justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+            display: inline-flex; /* Use flex for centering icon/text */
+            align-items: center;
+            justify-content: center;
         }
 
-         #rerun-container button {
-             max-width: none; /* Remove max-width constraint for rerun button */
-             width: auto; /* Allow width to be determined by content + padding */
-              padding: 12px 25px; /* Ensure padding is set */
-         }
+        #rerun-container button {
+            max-width: none; /* Remove max-width constraint for rerun button */
+            width: auto; /* Allow width to be determined by content + padding */
+            padding: 12px 25px; /* Ensure padding is set */
+        }
 
+        #rerun-container button i {
+            margin-right: 10px;
+        }
+
+        .upload-section button i {
+            margin-right: 10px;
+        }
 
         .upload-section button[type="submit"]:hover,
         #rerun-container button:hover {
@@ -571,9 +583,11 @@
              padding-left: 0; /* Remove default list padding */
              position: relative; /* Needed for custom bullet */
         }
-         .alert li:last-child {
+        
+        .alert li:last-child {
              margin-bottom: 0;
-         }
+        }
+
          .alert li::before {
             content: "\f06a"; /* Exclamation Circle */
             font-family: "Font Awesome 6 Free";
@@ -583,7 +597,7 @@
              display: inline-block;
              width: 1em; /* Give bullet some space */
              margin-left: -1em; /* Pull bullet back to the left */
-         }
+        }
 
         #toast-container {
             position: fixed;
@@ -613,20 +627,101 @@
             gap: 10px;
              pointer-events: auto; /* Make toast clickable if needed (e.g., close button) */
         }
+
         .toast.toast-error {
             background-color: var(--deped-error);
         }
+
         .toast.toast-info {
              background-color: var(--secondary-blue); /* Info color */
         }
-
 
         .toast.show {
             opacity: 1;
             transform: translateX(0);
         }
+
         .toast i {
             font-size: 1.2rem;
+        }
+
+        .sample-template-button {
+            display: inline-block;
+            padding: 10px 16px;
+            margin-top: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--deped-blue);
+            background-color: var(--deped-white);
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .sample-template-button:hover {
+            background-color: var(--deped-yellow);
+            transform: translateY(-2px);
+        }
+
+        .sample-template-button:active {
+            background-color: var(--deped-yellow);
+            transform: translateY(0);
+        }
+        
+        .tooltip-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-left: 6px;
+            cursor: pointer;
+        }
+
+        .tooltip-icon {
+            font-size: 1rem;
+            color: var(--deped-gray);
+            user-select: none;
+        }
+
+        .tooltip-box {
+            display: none;
+            width: 300px;
+            background-color: var(--deped-white);
+            color: var(--text-dark);
+            text-align: left;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            position: absolute;
+            top: 120%;
+            left: 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            font-size: 0.7rem;
+            line-height: 1.4;
+            z-index: 9999;
+        }
+        
+        .tooltip-wrapper:hover .tooltip-box {
+            display: block;
+        }
+
+        .tooltip-title {
+            margin-top: 5px;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            text-align: center;
+        }
+
+        .columns-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+        }
+
+        .columns-grid ul {
+            margin: 0;
+            padding-left: 18px;
         }
 
         /* Footer (No changes requested in structure/basic styles, adding transitions) */
@@ -900,15 +995,54 @@
             <div class="upload-section fade-in-on-scroll" id="data-cleaning">
                 <h2><i class="fas fa-broom"></i> Clean Enrollment Data</h2>
                 <form action="/clean" method="POST" enctype="multipart/form-data" id="cleanForm">
+                    <div class="sample-template">
+                        <a href="{{ url_for('download_template') }}" class="sample-template-button">
+                            📥 Download Sample Template
+                        </a>
+                        <div class="tooltip-wrapper"> <i class="fas fa-circle-question tooltip-icon"></i>
+                            <div class="tooltip-box" id="tooltipBox">
+                                <p class="tooltip-title"><strong>Expected Column Names:</strong></p>
+                                <div class="columns-grid">
+                                    <ul>
+                                    <li>Region</li>
+                                    <li>Division</li>
+                                    <li>District</li>
+                                    <li>BEIS School ID</li>
+                                    <li>School Name</li>
+                                    <li>Street Address</li>
+                                    <li>Province</li>
+                                    <li>Municipality</li>
+                                    <li>Legislative District</li>
+                                    <li>Barangay</li>
+                                    <li>Sector</li>
+                                    <li>School Subclassification</li>
+                                    <li>School Type</li>
+                                    <li>Modified COC</li>
+                                    </ul>
+                                    <ul>
+                                    <li><strong>K - G6:</strong> [Male, Female]</li>
+                                    <li><strong>Elem NG:</strong> [Male, Female]</li>
+                                    <li><strong>G7 – G10:</strong> [Male, Female]</li>
+                                    <li><strong>JHS NG:</strong> [Male, Female]</li>
+                                    <li><strong>G11 - G12:</strong> ABM, HUMSS, STEM, GAS, PBM, TVL, SPORTS, ARTS [Male, Female]</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.7rem; margin-top: 10px; color: var(--text-light);">
+                            Use this template to format your data correctly.
+                        </p>
+                           
+                    </div>
                     <div class="file-input-wrapper">
+                        <span class="file-name" id="uncleaned-filename">No chosen file.</span>
                         <span class="file-input-button"><i class="fas fa-file-csv"></i> Choose Uncleaned CSV...</span>
-                        <input type="file" name="uncleaned_file" id="uncleaned_file_input" accept=".csv" required />
-                        <span class="file-name" id="uncleaned-filename">No file selected</span>
+                        <input type="file" name="uncleaned_file" id="uncleaned_file_input" accept=".csv" required /> 
                     </div>
                     <br>
-                    <button type="submit"><i class="fas fa-upload"></i> Upload & Clean Data</button>
+                    <button type="submit"><i class="fas fa-upload"></i> Upload to Clean Data</button>
                 </form>
-                <p style="font-size: 0.9rem; margin-top: 15px; color: var(--text-light);">Cleaned data will be downloaded to your PC after processing.</p>
+                <p style="font-size: 0.8rem; margin-top: 10px; margin-bottom: 32px; color: var(--text-light);">Cleaned data saves automatically to your PC.</p>
             </div>
 
             <div class="upload-section fade-in-on-scroll" id="file-upload">
@@ -926,14 +1060,14 @@
                 {% endwith %}
                 <form action="/upload" method="POST" enctype="multipart/form-data" id="uploadForm">
                     <div class="file-input-wrapper">
+                        <span class="file-name" id="upload-filename">No chosen file.</span>
                         <span class="file-input-button"><i class="fas fa-file-csv"></i> Choose Cleaned CSV...</span>
                         <input type="file" name="file" id="upload_file_input" accept=".csv" required />
-                        <span class="file-name" id="upload-filename">No file selected</span>
                     </div>
                     <br>
                     <button type="submit"><i class="fas fa-check-circle"></i> Upload to Dashboard</button>
                 </form>
-                <p style="font-size: 0.9rem; margin-top: 15px; color: var(--text-light);">This data will update the dashboard views.</p>
+                <p style="font-size: 0.8rem; margin-top: 10px; margin-bottom: 32px ; color: var(--text-light);">Uploaded data updates dashboard views.</p>
             </div>
         </div>
     </section>
@@ -1024,9 +1158,9 @@
                 if (input) {
                     input.addEventListener('change', function(e) {
                         if (e.target.files && e.target.files.length > 0) {
-                            filenameSpan.textContent = e.target.files[0].name;
+                            filenameSpan.textContent = `File:  "${e.target.files[0].name}"`;
                         } else {
-                            filenameSpan.textContent = 'No file selected';
+                            filenameSpan.textContent = 'No chosen file.';
                         }
                     });
                 }
