@@ -118,6 +118,11 @@ def clean():
 
     return render_template('upload.html')
 
+# sample
+@app.route("/download-template")
+def download_template():
+    return send_file("static/sample_template.csv", as_attachment=True)
+
 @app.route('/api/enrollment_data')
 @app.route('/api/enrollment_data')
 def get_enrollment_data():
