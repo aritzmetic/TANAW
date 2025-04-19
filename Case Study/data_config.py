@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import re
 
 def get_dataset_path(filename="Cleaned_School_DataSet.csv"):
     return os.path.join(os.path.dirname(__file__), 'static', filename)
@@ -26,15 +27,15 @@ def fetch_summary_data_from_csv(file_path):
         total_enrollments = total_male + total_female
         number_of_schools = df['BEIS School ID'].nunique()
         regions_with_schools = df['Region'].nunique()
-        number_of_year_levels = 13  # K to G12
+        number_of_year_levels = 13 
         top_schools = (df.groupby('UniqueSchool')['TotalEnrollment'].sum().sort_values(ascending=False).head(5).astype(int).to_dict())
-         # Enrollment by Region
+
         if "Region" in df.columns:
             enrollment_by_region = df["Region"].value_counts().to_dict()
         else:
             enrollment_by_region = {}
         
-        # Custom mapping of grade levels to corresponding columns
+        
         grade_columns = {
             'Kindergarten': ['K Male', 'K Female'],
             'Grade 1': ['G1 Male', 'G1 Female'],
@@ -69,13 +70,13 @@ def fetch_summary_data_from_csv(file_path):
             ]
         }
 
-        # Compute total enrollment per grade level
+ 
         enrollment_by_year_level = {}
         for grade, columns in grade_columns.items():
             valid_cols = [col for col in columns if col in df.columns]
             enrollment_by_year_level[grade] = int(df[valid_cols].sum().sum()) if valid_cols else 0
 
-        # Average Enrollment per Region
+      
         if "Region" in df.columns and "TotalEnrollment" in df.columns:
             avg_enrollment_per_region = (
                 df.groupby('Region')['TotalEnrollment']
@@ -87,20 +88,19 @@ def fetch_summary_data_from_csv(file_path):
         else:
             avg_enrollment_per_region = {}
 
-        # Calculate total enrollment columns
+
         df['TotalMale'] = df.filter(like='Male').sum(axis=1)
         df['TotalFemale'] = df.filter(like='Female').sum(axis=1)
 
-        # Group by Region
         grouped = df.groupby('Region')[['TotalMale', 'TotalFemale']].sum()
 
-        # Calculate male percentage
+      
         grouped['TotalEnrollment'] = grouped['TotalMale'] + grouped['TotalFemale']
         grouped['MalePercentage'] = (grouped['TotalMale'] / grouped['TotalEnrollment']) * 100
 
         gender_ratio_by_region = grouped['MalePercentage'].round(2).to_dict()
 
-        # Senior High Enrollment by Strand
+
         shs_strands = {
             'ABM': ['G11 ACAD - ABM Male', 'G11 ACAD - ABM Female', 'G12 ACAD - ABM Male', 'G12 ACAD - ABM Female'],
             'HUMSS': ['G11 ACAD - HUMSS Male', 'G11 ACAD - HUMSS Female', 'G12 ACAD - HUMSS Male', 'G12 ACAD - HUMSS Female'],
