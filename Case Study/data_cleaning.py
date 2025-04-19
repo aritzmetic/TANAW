@@ -76,7 +76,7 @@ def clean_data(file_path):
 
     df_cleaned = df_cleaned.drop(unrealistic_data.index)
 
-    cleaned_filename = f"cleaned_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    cleaned_filename = f"cleaned_{datetime.now().strftime('%Y%m%d_%H%M')}.csv"
     cleaned_path = os.path.join(cleaned_files_directory, cleaned_filename)
 
     if isinstance(df_cleaned, pd.DataFrame):
@@ -85,4 +85,3 @@ def clean_data(file_path):
     else:
         raise ValueError("DataFrame was not cleaned properly.")
     
-    print(filtered_df.columns)

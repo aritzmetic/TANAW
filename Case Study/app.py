@@ -74,24 +74,23 @@ def upload():
     dataset_path = os.path.join(UPLOAD_FOLDER, 'Cleaned_School_DataSet.csv')
     last_updated = None
     if os.path.exists(dataset_path):
-        last_updated = datetime.fromtimestamp(os.path.getmtime(dataset_path)).strftime('%Y-%m-%d %H:%M:%S')
-
+        last_updated = datetime.fromtimestamp(os.path.getmtime(dataset_path)).strftime('%Y-%m-%d %H:%M')
     if request.method == "POST":
         if 'file' not in request.files:
-            flash('No file part')
+            flash(('No file part', 'error'), "upload")
             return redirect(request.url)
         file = request.files['file']
         if file.filename == '':
-            flash('No selected file')
+            flash(('No selected file', 'error'), "upload")
             return redirect(request.url)
 
         if file and allowed_file(file.filename):
             file.save(dataset_path)
-            flash('CSV file uploaded successfully. Rerun TANAW to activate it!')
-            last_updated = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            flash(('CSV file uploaded successfully. Rerun TANAW to activate it!', 'success'), "upload")
+            last_updated = datetime.now().strftime('%Y-%m-%d %H:%M')
             return render_template("upload.html", last_updated=last_updated)
 
-        flash("Invalid file type. Please upload a .csv file.")
+        flash(("Invalid file type. Please upload a .csv file.", 'error'), "upload")
         return redirect(request.url)
 
     return render_template("upload.html", last_updated=last_updated)
@@ -110,10 +109,10 @@ def clean():
                 return send_file(cleaned_path, as_attachment=True)
 
             except Exception as e:
-                flash(f"Data cleaning failed: {str(e)}")
+                flash(("Data cleaning failed. Uploaded file has missing or incorrect columns.", 'error'), "cleaning")
                 return redirect(request.url)
 
-        flash("No valid file selected for cleaning.")
+        flash(("No valid file selected for cleaning.", 'error'), "cleaning")
         return redirect(request.url)
 
     return render_template('upload.html')
@@ -140,16 +139,16 @@ def rerun_app():
         with open(__file__, 'r') as f:
             content = f.readlines()
 
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
         content.append(f"# Triggering auto-reload at {timestamp}\n")
 
         with open(__file__, 'w') as f:
             f.writelines(content)
 
-        flash("TANAW is now Reloaded!", 'success')
+        flash(("TANAW is now reloaded!", 'success'), "upload")
 
     except Exception as e:
-        flash(f"Error triggering auto-reload: {str(e)}", "error")
+        flash((f"Error triggering auto-reload: {str(e)}", "error"), "upload")
 
     return redirect(url_for('home'))
 
@@ -159,10 +158,3 @@ dash_app_report = create_dash_app_report(app)
 
 if __name__ == "__main__":
     app.run(debug=True)
-# Triggering auto-reload at 2025-04-18 20:35:38
-# Triggering auto-reload at 2025-04-18 20:47:09
-# Triggering auto-reload at 2025-04-18 20:49:40
-# Triggering auto-reload at 2025-04-18 20:54:15
-# Triggering auto-reload at 2025-04-18 22:30:12
-# Triggering auto-reload at 2025-04-19 00:09:24
-# Triggering auto-reload at 2025-04-19 00:46:30
