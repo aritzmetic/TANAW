@@ -74,8 +74,7 @@ def upload():
     dataset_path = os.path.join(UPLOAD_FOLDER, 'Cleaned_School_DataSet.csv')
     last_updated = None
     if os.path.exists(dataset_path):
-        last_updated = datetime.fromtimestamp(os.path.getmtime(dataset_path)).strftime('%Y-%m-%d %H:%M:%S')
-
+        last_updated = datetime.fromtimestamp(os.path.getmtime(dataset_path)).strftime('%Y-%m-%d %H:%M')
     if request.method == "POST":
         if 'file' not in request.files:
             flash(('No file part', 'error'), "upload")
