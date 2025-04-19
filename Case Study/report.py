@@ -7,7 +7,7 @@ import io
 import base64
 
 def create_dash_app_report(flask_app):
-    dash_app_report = Dash(__name__, server=flask_app, routes_pathname_prefix="/dashreport/", external_stylesheets=['assets/style.css'])
+    dash_app_report = Dash(__name__, server=flask_app, routes_pathname_prefix="/dashreport/", external_stylesheets=['assets/style.css'], serve_locally=True)
 
     file_path = get_dataset_path()
     all_data = fetch_enrollment_records_from_csv(file_path)
