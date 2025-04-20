@@ -2,9 +2,11 @@ import os
 import pandas as pd
 import re
 
+# Returns the full path of the dataset CSV file located in /static/
 def get_dataset_path(filename="Cleaned_School_DataSet.csv"):
     return os.path.join(os.path.dirname(__file__), 'static', filename)
 
+# Reads CSV file and returns a list of enrollment records as dictionaries
 def fetch_enrollment_records_from_csv(file_path):
     try:
         df = pd.read_csv(file_path)
@@ -16,49 +18,31 @@ def fetch_enrollment_records_from_csv(file_path):
         print(f"An error occurred: {e}")
         return []
 
+# Fetches and summarizes various metrics from the enrollment CSV data
 def fetch_summary_data_from_csv(file_path):
     try:
         df = pd.read_csv(file_path)
+        df['UniqueSchool'] = df['School Name'] + " (" + df['BEIS School ID'].astype(str) + ")"
+        df['TotalEnrollment'] = df.filter(like='Male').sum(axis=1) + df.filter(like='Female').sum(axis=1)
 
-        # Identify male and female columns
-        male_cols = [col for col in df.columns if re.search(r'\bmale\b', col, re.IGNORECASE)]
-        female_cols = [col for col in df.columns if re.search(r'\bfemale\b', col, re.IGNORECASE)]
-
-        for col in male_cols + female_cols:
-            df[col] = pd.to_numeric(df[col], errors='coerce')
-
-        df['TotalMale'] = df[male_cols].sum(axis=1)
-        df['TotalFemale'] = df[female_cols].sum(axis=1)
-        df['TotalEnrollment'] = df['TotalMale'] + df['TotalFemale']
-
-        total_male = df['TotalMale'].sum()
-        total_female = df['TotalFemale'].sum()
+        # Compute total counts
+        total_male = df.filter(like='Male').sum().sum()
+        total_female = df.filter(like='Female').sum().sum()
         total_enrollments = total_male + total_female
+        number_of_schools = df['BEIS School ID'].nunique()
+        regions_with_schools = df['Region'].nunique()
+        number_of_year_levels = 13 
+        top_schools = (df.groupby('UniqueSchool')['TotalEnrollment'].sum().sort_values(ascending=False).head(5).astype(int).to_dict())
+        total_divisions = df['Division'].nunique()
+        total_municipalities = df['Municipality'].nunique()
 
-        # Try to find the 'Region' column
-        region_col = next((col for col in df.columns if col.strip().lower() == 'region'), None)
-        number_of_regions = df[region_col].nunique() if region_col else 0
-
-        # Determine if school-level
-        is_school_level = 'BEIS School ID' in df.columns and 'School Name' in df.columns
-        number_of_schools = df['BEIS School ID'].nunique() if is_school_level else None
-        number_of_year_levels = 13
-
-        # Top schools logic
-        if is_school_level:
-            df['UniqueSchool'] = df['School Name'] + " (" + df['BEIS School ID'].astype(str) + ")"
-            top_schools = (
-                df.groupby('UniqueSchool')['TotalEnrollment']
-                .sum().sort_values(ascending=False).head(5)
-                .astype(int).to_dict()
-            )
+        # Enrollment count per region
+        if "Region" in df.columns:
+            enrollment_by_region = df["Region"].value_counts().to_dict()
         else:
-            top_schools = {}
-
-        # Enrollment by Region (count of schools/rows)
-        enrollment_by_region = df[region_col].value_counts().to_dict() if region_col else {}
-
-        # Enrollment by year level (sums per grade)
+            enrollment_by_region = {}
+        
+        # Define columns for each year level
         grade_columns = {
             'Kindergarten': ['K Male', 'K Female'],
             'Grade 1': ['G1 Male', 'G1 Female'],
@@ -93,28 +77,35 @@ def fetch_summary_data_from_csv(file_path):
             ]
         }
 
+        # Enrollment per grade level
         enrollment_by_year_level = {}
         for grade, columns in grade_columns.items():
             valid_cols = [col for col in columns if col in df.columns]
             enrollment_by_year_level[grade] = int(df[valid_cols].sum().sum()) if valid_cols else 0
 
-        # Average Enrollment Per Region
-        avg_enrollment_per_region = (
-            df.groupby(region_col)['TotalEnrollment'].mean()
-            .round(2).astype(int).to_dict()
-            if region_col else {}
-        )
-
-        # Gender Ratio Per Region
-        if region_col:
-            grouped = df.groupby(region_col)[['TotalMale', 'TotalFemale']].sum()
-            grouped['TotalEnrollment'] = grouped['TotalMale'] + grouped['TotalFemale']
-            grouped['MalePercentage'] = (grouped['TotalMale'] / grouped['TotalEnrollment']) * 100
-            gender_ratio_by_region = grouped['MalePercentage'].round(2).to_dict()
+        # Average enrollment per region
+        if "Region" in df.columns and "TotalEnrollment" in df.columns:
+            avg_enrollment_per_region = (
+                df.groupby('Region')['TotalEnrollment']
+                .mean()
+                .round(2)
+                .astype(int)
+                .to_dict()
+            )
         else:
-            gender_ratio_by_region = {}
+            avg_enrollment_per_region = {}
 
-        # SHS Enrollment by Strand
+        # Calculate total male and female per row for gender breakdown
+        df['TotalMale'] = df.filter(like='Male').sum(axis=1)
+        df['TotalFemale'] = df.filter(like='Female').sum(axis=1)
+
+        # Group by region and calculate gender ratios
+        grouped = df.groupby('Region')[['TotalMale', 'TotalFemale']].sum()
+        grouped['TotalEnrollment'] = grouped['TotalMale'] + grouped['TotalFemale']
+        grouped['MalePercentage'] = (grouped['TotalMale'] / grouped['TotalEnrollment']) * 100
+        gender_ratio_by_region = grouped['MalePercentage'].round(2).to_dict()
+
+        # SHS strand enrollment columns
         shs_strands = {
             'ABM': ['G11 ACAD - ABM Male', 'G11 ACAD - ABM Female', 'G12 ACAD - ABM Male', 'G12 ACAD - ABM Female'],
             'HUMSS': ['G11 ACAD - HUMSS Male', 'G11 ACAD - HUMSS Female', 'G12 ACAD - HUMSS Male', 'G12 ACAD - HUMSS Female'],
@@ -126,31 +117,40 @@ def fetch_summary_data_from_csv(file_path):
             'ARTS': ['G11 ARTS Male', 'G11 ARTS Female', 'G12 ARTS Male', 'G12 ARTS Female']
         }
 
+        # SHS enrollment per strand
         shs_enrollment_by_strand = {}
         for strand, cols in shs_strands.items():
             valid_cols = [col for col in cols if col in df.columns]
             shs_enrollment_by_strand[strand] = int(df[valid_cols].sum().sum()) if valid_cols else 0
 
-        # Final summary
-        summary = {
+        # Enrollment by School Sector
+        if 'Sector' in df.columns:
+            enrollment_by_sector_df = df.groupby('Sector')['TotalEnrollment'].sum()
+            enrollment_by_sector = {
+                sector: int(enrollment)
+                for sector, enrollment in enrollment_by_sector_df.items()
+            }
+        else:
+            enrollment_by_sector = {}
+
+        # Return all summary statistics
+        return {
             'totalEnrollments': int(total_enrollments),
             'maleEnrollments': int(total_male),
             'femaleEnrollments': int(total_female),
-            'regionsWithSchools': int(number_of_regions),
-            'numberOfYearLevels': number_of_year_levels,
+            'numberOfDivisions': int(total_divisions),
+            'numberOfMunicipalities': int(total_municipalities),
+            'numberOfSchools': int(number_of_schools),
+            'regionsWithSchools': int(regions_with_schools),
+            'numberOfYearLevels': int(number_of_year_levels),
             'topSchools': top_schools,
             "enrollmentByRegion": enrollment_by_region,
             'enrollmentByYearLevel': enrollment_by_year_level,
             'averageEnrollmentPerRegion': avg_enrollment_per_region,
             'genderRatioByRegion': gender_ratio_by_region,
-            'shsEnrollmentByStrand': shs_enrollment_by_strand
+            'shsEnrollmentByStrand': shs_enrollment_by_strand,
+            'enrollmentBySector': enrollment_by_sector 
         }
-
-        if is_school_level:
-            summary['numberOfSchools'] = int(number_of_schools)
-
-        return summary
-
     except Exception as e:
         print(f"Error processing summary data: {e}")
         return {}
