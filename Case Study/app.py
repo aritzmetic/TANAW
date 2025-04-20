@@ -81,10 +81,30 @@ def upload():
             flash('No file part')
             return redirect(request.url)
         file = request.files['file']
+       
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            raw_path = os.path.join(UPLOAD_FOLDER, 'temp_' + filename)
+            file.save(raw_path)
 
+            try:
+                # Clean the uploaded file
+                cleaned_path = clean_data(raw_path)
+
+                # Move cleaned file to be the active dataset
+                os.replace(cleaned_path, dataset_path)
+
+                # Optional: Clean up the raw temp file if needed
+                os.remove(raw_path)
+            except Exception as e:
+                            flash(f"Data cleaning failed: {str(e)}")
+                            return redirect(request.url)
+
+            return render_template("upload.html", last_updated=last_updated)
+        
         if file and allowed_file(file.filename):
             file.save(dataset_path)
             flash('CSV file uploaded successfully. Rerun TANAW to activate it!')
@@ -168,3 +188,6 @@ if __name__ == "__main__":
 # Triggering auto-reload at 2025-04-19 00:46:30
 # Triggering auto-reload at 2025-04-19 23:17:22
 # Triggering auto-reload at 2025-04-20 01:06:35
+# Triggering auto-reload at 2025-04-20 10:46:32
+# Triggering auto-reload at 2025-04-20 11:10:36
+# Triggering auto-reload at 2025-04-20 11:14:45

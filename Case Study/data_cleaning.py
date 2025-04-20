@@ -19,6 +19,45 @@ standard_columns = [
     "G12 SPORTS Male", "G12 SPORTS Female", "G12 ARTS Male", "G12 ARTS Female"
 ]
 
+region_mapping = {
+    'barmm': 'BARMM',
+    'bangsamoro': 'BARMM',
+    'car': 'CAR',
+    'cordillera': 'CAR',
+    'caraga': 'CARAGA',
+    'mimaropa': 'MIMAROPA',
+    'ncr': 'NCR',
+    'national capital region': 'NCR',
+    'pso': 'PSO',
+    'region i': 'Region I', 'region 1': 'Region I',
+    'region ii': 'Region II', 'region 2': 'Region II',
+    'region iii': 'Region III', 'region 3': 'Region III',
+    'region iv-a': 'Region IV-A', 'region 4a': 'Region IV-A', 'region iva': 'Region IV-A',
+    'region v': 'Region V', 'region 5': 'Region V',
+    'region vi': 'Region VI', 'region 6': 'Region VI',
+    'region vii': 'Region VII', 'region 7': 'Region VII',
+    'region viii': 'Region VIII', 'region 8': 'Region VIII',
+    'region ix': 'Region IX', 'region 9': 'Region IX',
+    'region x': 'Region X', 'region 10': 'Region X',
+    'region xi': 'Region XI', 'region 11': 'Region XI',
+    'region xii': 'Region XII', 'region 12': 'Region XII',
+}
+
+def standardize_region_values(val):
+    if isinstance(val, str):
+        val_lower = val.strip().lower()
+        
+        # Try to extract short region codes using regex
+        match = re.search(r'(region\s?[ixv0-9\-a]+|ncr|caraga|car|barmm|pso)', val_lower)
+        if match:
+            code = match.group(1).replace(" ", "").replace("-", "").lower()
+            for key, standard in region_mapping.items():
+                if key.replace(" ", "").replace("-", "") == code:
+                    return standard
+        return val.strip()
+    return val
+
+
 def preprocess_column(col):
     col = str(col).upper().strip()
 
@@ -60,11 +99,12 @@ def standardize_column_name(col):
     match = get_close_matches(col, standard_columns, n=1, cutoff=0.85)
     return match[0] if match else col
 
-
+    
 def clean_data(file_path):
     df = pd.read_csv(file_path, header=None)
     cleaned_files_directory = os.path.join(os.path.dirname(__file__), 'cleaned_files')
     os.makedirs(cleaned_files_directory, exist_ok=True)
+    df = df.applymap(standardize_region_values)
 
     # Detect header row
     potential_headers = ['Region', 'Kindergarten', 'Grade 1', 'Grade 2', 'G1', 'G2']
@@ -83,7 +123,7 @@ def clean_data(file_path):
     df.columns = df.iloc[header_row_index]
     df_cleaned = df.iloc[header_row_index + 1:].reset_index(drop=True)
     df_cleaned = df_cleaned.apply(pd.to_numeric, errors='ignore')
-
+    
     is_school_level = 'School Name' in df_cleaned.columns and 'BEIS School ID' in df_cleaned.columns
 
     if is_school_level:
@@ -144,6 +184,7 @@ def clean_data(file_path):
         new_columns = []
         last_valid_grade = None
         gender_indicators = ['male', 'female', 'm', 'f']
+
 
         for i in range(len(gender_row)):
             grade = str(grade_row[i]).strip() if i < len(grade_row) else ""
