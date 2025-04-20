@@ -80,8 +80,7 @@
                 font-size: 1.8rem;
                 color: var(--deped-blue);
                 margin-bottom: 0.8em;
-                border-bottom: 4px solid var(--deped-yellow);
-                padding-bottom: 0.5em;
+                border-bottom: 2.8px solid var(--deped-yellow);
             }
 
             h4 {
@@ -356,12 +355,12 @@
                 box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
             }
 
-    /* Solid KPIs Section */
+            /* Solid KPIs Section */
             #kpis {
                 display: grid;
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(6, 1fr);
                 gap: 15px;
-                margin-bottom: 15px;
+                margin-bottom: 5px;
                 z-index: 1;
             }
 
@@ -395,6 +394,8 @@
             .kpi-card:nth-child(10) { --animation-delay: 1.4s; }
             .kpi-card:nth-child(11) { --animation-delay: 1.5s; }
             .kpi-card:nth-child(12) { --animation-delay: 1.6s; }
+            .kpi-card:nth-child(13) { --animation-delay: 1.7s; }
+            .kpi-card:nth-child(13) { --animation-delay: 1.8s; }
 
             .kpi-card:hover {
                 transform: translateY(-2px);
@@ -402,32 +403,83 @@
             }
 
             .kpi-card h3 {
-                font-size: 1.2rem;
+                font-size: 1.0rem;
                 margin-bottom: 0.4em;
+                margin: 0px 0px;
             }
 
             .kpi-card .loading-spinner {
                 border: 3px solid rgba(0, 0, 0, 0.1);
                 border-top: 3px solid var(--deped-blue);
                 border-radius: 50%;
-                width: 30px;
-                height: 30px;
+                width: 28px;
+                height: 28px;
                 margin: 8px auto;
                 animation: spin 1s linear infinite;
             }
 
             .kpi-card .data-value {
+                margin: 0px 0px;
                 font-size: 1.4rem;
                 font-weight: 600;
             }
 
             .kpi-card .visualization-container {
-                margin-top: 10px;
                 width: 80%;
                 max-width: 200px;
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                gap: 15px;
+                padding: 8px 0px;
+            }
+
+            /* Chart Section Below KPIs */
+            #kpi-charts {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 2fr));
+                gap: 15px;
+                padding: 10px;
+            }
+
+            .chart-container {
+                width: 100%;
+                height: 400px;
+                position: relative;
+                margin-top: 20px;
+            }
+
+            .legend-container {
+                display: flex;
+                flex-direction: column; /* Stacks legends vertically */
+                align-items: flex-start;
+                justify-content: flex-start;
+                width: 30%; /* Makes the legend container take up less space */
+                padding: 10px;
+                height: 100%;
+                overflow-y: auto; /* Allows scrolling if legend items overflow */
+            }
+
+            .legend-container ul {
+                list-style-type: none;
+                padding-left: 0;
+            }
+
+            .legend-container li {
+                display: flex;
+                align-items: center;
+                margin-bottom: 5px;
+            }
+
+            .legend-container .legend-color {
+                width: 12px;
+                height: 12px;
+                margin-right: 8px;
+            }
+            
+            canvas {
+                width: auto !important;
+                height: auto !important;
             }
 
             .single-value-visual {
@@ -691,65 +743,7 @@
                 from { opacity: 0; transform: translateY(-20px); }
                 to { opacity: 1; transform: translateY(0); }
             }
-            #regionChartContainer {
-                display: flex;
-                flex-direction: row; /* Aligns items horizontally */
-                justify-content: space-between; /* Distributes space between the legend and chart */
-                align-items: center;
-                width: 100%;
-                height: 550px;
-            }
-
-            #regionChart {
-                width: 65%; /* Makes the pie chart take more space */
-                max-height: 90%;
-                margin-left: 20px; /* Adds some space between pie chart and legend */
-            }
-
-            .legend-container {
-                display: flex;
-                flex-direction: column; /* Stacks legends vertically */
-                align-items: flex-start;
-                justify-content: flex-start;
-                width: 30%; /* Makes the legend container take up less space */
-                padding: 10px;
-                height: 100%;
-                overflow-y: auto; /* Allows scrolling if legend items overflow */
-            }
-
-            .legend-container ul {
-                list-style-type: none;
-                padding-left: 0;
-            }
-
-            .legend-container li {
-                display: flex;
-                align-items: center;
-                margin-bottom: 5px;
-            }
-
-            .legend-container .legend-color {
-                width: 12px;
-                height: 12px;
-                margin-right: 8px;
-            }
             
-            #topSchoolsChart,
-            #avgEnrollmentPerRegionChart,
-            #genderRatioChart,
-            #shsStrandChart,
-            #yearLevelRadarChart {
-                width: 100% !important;
-                height: 100% !important;
-                max-width: 100%;
-                max-height: 100%;
-            }
-
-                .chart-container {
-                width: 100%;
-                height: 400px;
-                position: relative;
-            }
 
     </style>
 </head>
@@ -791,106 +785,153 @@
     <button onclick="window.location.href='/logout'"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
 
-    <section id="kpis">
-        <div id="maleEnrollments" class="kpi-card">
-            <h3><i class="fas fa-male"></i> Male</h3>
-            <div class="loading-spinner"></div>
+    <section id="kpis"> <!-- KPIs (Summary Metrics) -->
+        <div id="totalEnrollments" class="kpi-card"> <!--KPI Total Enrollments -->
             <div class="visualization-container">
-                <canvas id="maleChart"></canvas>
+                <i class="fas fa-users" style="font-size: 2.0em; color: var(--deped-blue);"></i>
+                <div>
+                    <div class="loading-spinner"></div>
+                        <p class="data-value"></p>
+                    <h3>Total Enrolled</h3>   
+                </div>
             </div>
-            <p class="data-value"></p>
-        </div>
-        <div id="totalEnrollments" class="kpi-card">
-            <h3><i class="fas fa-users"></i> Total Enrollment</h3>
-            <div class="loading-spinner"></div>
+        </div> 
+        
+        <div id="numberOfSchools" class="kpi-card"> <!--KPI Number of Schools -->
             <div class="visualization-container">
-                <canvas id="totalEnrollmentChart"></canvas>
+                <i class="fas fa-school" style="font-size: 2.0em; color: var(--deped-blue);"></i>
+                <div>
+                    <div class="loading-spinner"></div>
+                        <p class="data-value">
+                            <span id="schoolsValue"></span>
+                        </p>
+                        <h3>Schools</h3>
+                    </div>    
+                </div>
             </div>
-            <p class="data-value"></p>
         </div>
-        <div id="femaleEnrollments" class="kpi-card">
-            <h3><i class="fas fa-female"></i> Female</h3>
-            <div class="loading-spinner"></div>
+
+        <div id="numberOfYearLevels" class="kpi-card"> <!--KPI Number of Year Levels -->
             <div class="visualization-container">
-                <canvas id="femaleChart"></canvas>
+                <i class="fas fa-layer-group" style="font-size: 2.0em; color: var(--deped-blue)"></i>
+                <div>
+                    <div class="loading-spinner"></div>
+                        <p class="data-value">
+                            <span id="yearLevelsValue"></span>
+                        </p>
+                        <h3>Year Levels</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="numberOfRegions" class="kpi-card"> <!--KPI Number of Regions -->
+            <div class="visualization-container">
+                <i class="fas fa-map-marker-alt" style="font-size: 2.0em; color: var(--deped-blue);"></i>
+                <div>
+                    <div class="loading-spinner"></div>
+                     <p class="data-value">
+                        <span id="regionsValue"></span>
+                    </p>
+                    <h3>Regions</h3>               
+                </div>
+            </div>
+        </div>
+
+        <div id="numberOfDivisions" class="kpi-card"> <!-- Total Divisions -->
+            <div class="visualization-container">
+                <i class="fas fa-sitemap" style="font-size: 2.0em; color: var(--deped-blue);"></i>
+                <div>
+                    <div class="loading-spinner"></div>
+                    <p class="data-value">
+                        <span id="divisionsValue"></span>
+                    </p>
+                    <h3>Divisions</h3>               
+                </div>
+            </div>
+        </div>
+
+        <div id="numberOfMunicipalities" class="kpi-card"> <!-- Total Municipalities -->
+            <div class="visualization-container">
+                <i class="fas fa-city" style="font-size: 2.0em; color: var(--deped-blue);"></i>
+                <div>
+                    <div class="loading-spinner"></div>
+                    <p class="data-value">
+                        <span id="municipalitiesValue"></span>
+                    </p>
+                    <h3>Municipalities</h3>               
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="kpi-charts"> <!-- Visual Data Charts (Separate Layout) -->
+        <div id="genderEnrollmentChartCard" class="kpi-card"> <!--KPI Gender Enrollment Bar -->
+            <h3><i class="fas fa-venus-mars"></i> Enrollment by Gender</h3>
+            <!-- <div class="loading-spinner"></div> -->
+            <div class="chart-container" style="height: 400px; width: 200px">
+                <canvas id="genderEnrollmentChart"></canvas>
             </div>
             <p class="data-value"></p>
         </div>
-        <div id="topSchoolsCard" class="kpi-card">
-            <h3><i class="fas fa-school"></i> Highest Enrollments</h3>
-            <div class="loading-spinner"></div>
-            <div class="chart-container">
-                <canvas id="topSchoolsChart"></canvas>
-            </div>
-            <p class="data-value"></p>
-        </div>
-        <div id="enrollmentByRegionCard" class="kpi-card">
+
+        <div id="enrollmentByRegionCard" class="kpi-card"> <!-- Enrolment by Region -->
             <h3><i class="fas fa-chart-area"></i> Enrollment by Region</h3>
-            <div class="chart-container" id="regionChartContainer">
-                <canvas id="regionChart"></canvas>
+            <div class="chart-container">
+                <canvas id="regionChart" style="height: 600px;"></canvas>
             </div>
             <p class="data-value"></p>
-        </div>        
-        <div id="enrollmentByYearLevelCard" class="kpi-card">
+        </div>  
+
+        <div id="enrollmentByYearLevelCard" class="kpi-card"> <!-- Enrollment by Year Level -->
             <h3><i class="fas fa-chart-bar"></i> Enrollment by Year Level</h3>
             <div class="chart-container">
                 <canvas id="yearLevelRadarChart"></canvas>
             </div>
             <p class="data-value"></p>
-        </div>        
-        <div id="avgEnrollmentPerRegionCard" class="kpi-card">
-            <h3><i class="fas fa-chart-bar"></i> Avg Enrollment/Region</h3>
+        </div>
+    </section>
+    <section id="kpi-charts"> <!-- Visual Data Charts (Separate Layout) -->
+        <div id="genderRatioByRegionCard" class="kpi-card"> <!-- Gender Distribution by Region -->
+            <h3><i class="fas fa-venus-mars"></i> Gender Distribution by Region</h3>
+            <div class="chart-container">
+                <canvas id="genderRatioChart" width="500"></canvas>
+            </div>
+        </div>
+    
+        <div id="topSchoolsCard" class="kpi-card"> <!-- Top 5 Most Populated Schools -->
+            <h3><i class="fas fa-school"></i> Top 5 Most Populated Schools</h3>
+            <!-- <div class="loading-spinner"></div> -->
+            <div class="chart-container">
+                <canvas id="topSchoolsChart"></canvas>
+            </div>
+            <p class="data-value"></p>
+        </div>
+    </section>
+    <section id="kpi-charts"> <!-- Visual Data Charts (Separate Layout) -->
+        <div id="avgEnrollmentPerRegionCard" class="kpi-card"> <!-- Average Enrollment Per Region -->
+            <h3><i class="fas fa-chart-bar"></i> Average Enrollment Per Region</h3>
             <div class="chart-container">
                 <canvas id="avgEnrollmentPerRegionChart" height="500"></canvas>
             </div>
             <p class="data-value"></p>
         </div> 
-        <div id="genderRatioByRegionCard" class="kpi-card">
-            <h3><i class="fas fa-venus-mars"></i> Gender % by Region</h3>
-            <div class="chart-container">
-                <canvas id="genderRatioChart" width="500"></canvas>
-            </div>
-        </div>
-        <div class="kpi-card">
-            <h3><i class="fas fa-stream"></i> SHS Enrollment by Strand</h3>
+
+        <div class="kpi-card"> <!-- Senior High Strand Enrollment -->
+            <h3><i class="fas fa-stream"></i> Senior High Strand Enrollment</h3>
             <div class="chart-container">
                 <canvas id="shsStrandChart" height="500" width="500"></canvas>
             </div>
-        </div>
-        <div id="numberOfRegions" class="kpi-card">
-            <h3><i class="fas fa-map"></i> No. of Regions</h3>
-            <div class="loading-spinner"></div>
-            <div class="visualization-container">
-                <div class="single-value-visual">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span id="regionsValue"></span>
-                </div>
+        </div>        
+    </section>
+    <section id="kpi-charts"> <!-- Visual Data Charts (Separate Layout) -->
+        <div id="sectorEnrollmentCard" class="kpi-card" > <!-- Sector Enrollment Doughnut Chart -->
+            <h3><i class="fas fa-building"></i> Enrollment by Sector</h3>
+            <div class="chart-container" >
+                <canvas id="sectorChart"></canvas>
             </div>
             <p class="data-value"></p>
         </div>
-        <div id="numberOfSchools" class="kpi-card">
-            <h3><i class="fas fa-school"></i> No. of Schools</h3>
-            <div class="loading-spinner"></div>
-            <div class="visualization-container">
-                <div class="single-value-visual">
-                    <i class="fas fa-university"></i>
-                    <span id="schoolsValue"></span>
-                </div>
-            </div>
-            <p class="data-value"></p>
-        </div>
-        <div id="numberOfYearLevels" class="kpi-card">
-            <h3><i class="fas fa-layer-group"></i> No. of Year Levels</h3>
-            <div class="loading-spinner"></div>
-            <div class="visualization-container">
-                <div class="single-value-visual">
-                    <i class="fas fa-list-ol"></i>
-                    <span id="yearLevelsValue"></span>
-                </div>
-            </div>
-            <p class="data-value"></p>
-        </div>
-        
     </section>
 
     <section id="highlights">
@@ -925,29 +966,49 @@
         function updateKPIs(data) {
             const kpisSection = document.getElementById('kpis');
             kpisSection.querySelectorAll('.loading-spinner').forEach(spinner => spinner.style.display = 'none');
+            
+            // Total Enrollments KPI 
+            const totalEnrollmentsDiv = document.getElementById('totalEnrollments');
+            totalEnrollmentsDiv.querySelector('.data-value').textContent = data.totalEnrollments ? data.totalEnrollments.toLocaleString() : 'N/A';
+            
+            // Number of Schools
+            const numberOfSchoolsDiv = document.getElementById('numberOfSchools');
+            numberOfSchoolsDiv.querySelector('.data-value').textContent = data.numberOfSchools ? data.numberOfSchools.toLocaleString() : 'N/A';
 
-            // ========== Top 5 Schools by Total Enrollment ==========
-            const topSchoolsCard = document.getElementById('topSchoolsCard');
-            const topSchoolsCanvas = document.getElementById('topSchoolsChart');
+            // Number of Year Levels
+            const numberOfYearLevelsDiv = document.getElementById('numberOfYearLevels');
+            numberOfYearLevelsDiv.querySelector('.data-value').textContent = data.numberOfYearLevels ? data.numberOfYearLevels.toLocaleString() : 'N/A';
+            
+            // Number of Regions
+            const numberOfRegionsDiv = document.getElementById('numberOfRegions');
+            numberOfRegionsDiv.querySelector('.data-value').textContent = data.regionsWithSchools ? data.regionsWithSchools.toLocaleString() : 'N/A';
 
-            if (data.topSchools && topSchoolsCanvas) {
-                const schoolNames = Object.keys(data.topSchools);
-                const enrollments = Object.values(data.topSchools);
-                
-                new Chart(topSchoolsCanvas.getContext('2d'), {
+            // Number of Divisions
+            const numberOfDivisionsSpan = document.getElementById("divisionsValue");
+            numberOfDivisionsSpan.textContent = data.numberOfDivisions ? data.numberOfDivisions.toLocaleString() : 'N/A';
+
+            // Number of Municipalities
+            const numberOfMunicipalitiesSpan = document.getElementById("municipalitiesValue");
+            numberOfMunicipalitiesSpan.textContent = data.numberOfMunicipalities ? data.numberOfMunicipalities.toLocaleString() : 'N/A';
+           
+            // === Total Enrollments Bar Chart (Comparing Male and Female) ===
+            const genderEnrollment = document.getElementById('genderEnrollmentChart')?.getContext('2d');
+            if (genderEnrollment) {
+                new Chart(genderEnrollment, {
                     type: 'bar',
                     data: {
-                        labels: schoolNames,
+                        labels: ['Male', 'Female'],
                         datasets: [{
-                            label: 'Total Enrollment',
-                            data: enrollments,
-                            backgroundColor: '#FF7043',
-                            borderRadius: 5,
-                            borderSkipped: false
+                            label: 'Enrollment Count',
+                            data: [data.maleEnrollments || 0, data.femaleEnrollments || 0],
+                            backgroundColor: ['#4fa3d1', '#f79bb0'], // Enhanced colors: shades of blue and pink
+                            borderColor: ['#1e8eb0', '#f06292'], // Darker borders for emphasis
+                            borderWidth: 2,
+                            borderRadius: 8, // Softer edges for a more modern look
                         }]
                     },
                     options: {
-                        indexAxis: 'y',  // horizontal bars
+                        indexAxis: 'x', 
                         responsive: true,
                         maintainAspectRatio: false,
                         scales: {
@@ -955,203 +1016,135 @@
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Students'
+                                    text: 'Gender',
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    }
+                                },
+                                ticks: {
+                                    font: {size: 12,},
+                                    color: '#333' // Ensures label readability
                                 }
                             },
                             y: {
-                                ticks: {
-                                    display: false // 👈 hides school names
-                                },
-                                grid: {
-                                    drawTicks: false,
-                                    display: false // optional: hides horizontal grid lines
-                                },
                                 title: {
-                                    display: false // hides "School Name" axis title
+                                    display: true,
+                                    text: 'Enrollment Count',
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    }
+                                },
+                                ticks: {
+                                    font: {size: 12,},
+                                    color: '#333'
                                 }
                             }
                         },
                         plugins: {
-                            legend: { display: false },
-                            title: {
-                                display: true,
-                                text: 'Top 5 Schools by Enrollment',
-                                font: { size: 16 }
-                            },
+                            legend: { display: false},
                             tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleFont: { size: 14 },
+                                bodyFont: { size: 12 },
                                 callbacks: {
-                                    label: (item) => `Enrolled: ${item.formattedValue}`
+                                    title: (tooltipItems) => `Gender: ${tooltipItems[0].label}`,
+                                    label: (tooltipItem) => `Count: ${tooltipItem.raw.toLocaleString()}` // Adds commas to large numbers for readability
                                 }
                             }
-                        }
-                    }
-                });
-            }
-
-            // Male Enrollments Pie Chart
-            const maleEnrollmentsDiv = document.getElementById('maleEnrollments');
-            maleEnrollmentsDiv.querySelector('.data-value').textContent = data.maleEnrollments ? data.maleEnrollments.toLocaleString() : 'N/A';
-            if (data.totalEnrollments && data.maleEnrollments) {
-                const malePercentage = (data.maleEnrollments / data.totalEnrollments) * 100;
-                const maleChartCanvas = document.getElementById('maleChart');
-                if (maleChartCanvas) {
-                    new Chart(maleChartCanvas.getContext('2d'), {
-                        type: 'pie',
-                        data: {
-                            datasets: [{
-                                data: [malePercentage, 100 - malePercentage],
-                                backgroundColor: ['#87CEEB', '#D3D3D3'],
-                                borderWidth: 0
-                            }]
                         },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { position: 'bottom' },
-                                tooltip: {
-                                    callbacks: {
-                                        label: (item) => `Male: ${item.formattedValue}%`
-                                    }
-                                },
-                                title: {
-                                    display: true,
-                                    text: 'Male Enrollment Percentage'
-                                }
-                            }
-                        }
-                    });
-                }
-            }
-
-            // Total Enrollments Bar Chart (Comparing Male and Female)
-            const totalEnrollmentsDiv = document.getElementById('totalEnrollments');
-            totalEnrollmentsDiv.querySelector('.data-value').textContent = data.totalEnrollments ? data.totalEnrollments.toLocaleString() : 'N/A';
-            const ctxTotal = document.getElementById('totalEnrollmentChart')?.getContext('2d');
-            if (ctxTotal) {
-                new Chart(ctxTotal, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Male', 'Female'],
-                        datasets: [{
-                            label: 'Enrollment Count',
-                            data: [data.maleEnrollments || 0, data.femaleEnrollments || 0],
-                            backgroundColor: ['#87CEEB', '#FFB6C1'],
-                            borderRadius: 5
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: { y: { beginAtZero: true } },
-                        plugins: { legend: { display: false }, title: { display: true, text: 'Total Enrollment by Gender' } },
                         interaction: {
                             mode: 'index',
-                            intersect: false,
-                        },
-                        tooltip: {
-                            callbacks: {
-                                title: (tooltipItems) => `Gender: ${tooltipItems[0].label}`,
-                                label: (tooltipItem) => `Count: ${tooltipItem.formattedValue}`
-                            }
+                            intersect: false
                         }
                     }
                 });
-            }
+            } 
+            
+            // === Enrollment by Region Chart (Vertical Bar) ===
+            fetch('/api/enrollment_data')
+                .then(response => response.json())
+                .then(data => {
+                    const regionData = data.enrollmentByRegion || {};
+                    const entries = Object.entries(regionData); // No sorting, keeps original order
 
-            // Female Enrollments Pie Chart
-            const femaleEnrollmentsDiv = document.getElementById('femaleEnrollments');
-            femaleEnrollmentsDiv.querySelector('.data-value').textContent = data.femaleEnrollments ? data.femaleEnrollments.toLocaleString() : 'N/A';
-            if (data.totalEnrollments && data.femaleEnrollments) {
-                const femalePercentage = (data.femaleEnrollments / data.totalEnrollments) * 100;
-                const femaleChartCanvas = document.getElementById('femaleChart');
-                if (femaleChartCanvas) {
-                    new Chart(femaleChartCanvas.getContext('2d'), {
-                        type: 'pie',
+                    const regionLabels = entries.map(entry => entry[0]);
+                    const regionCounts = entries.map(entry => entry[1]);
+
+                    const ctx = document.getElementById('regionChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
                         data: {
+                            labels: regionLabels,
                             datasets: [{
-                                data: [femalePercentage, 100 - femalePercentage],
-                                backgroundColor: ['#FFB6C1', '#D3D3D3'],
-                                borderWidth: 0
+                                label: 'Enrollment Count',
+                                data: regionCounts,
+                                backgroundColor: 'rgba(30, 108, 217, 0.7)', // Soft DepEd blue
+                                borderColor: 'rgba(30, 108, 217, 1)', // Solid blue border
+                                borderWidth: 2,
+                                hoverBackgroundColor: 'rgba(30, 108, 217, 1)',
+                                hoverBorderColor: 'rgba(30, 108, 217, 1)',
                             }]
                         },
                         options: {
+                            indexAxis: 'y',
                             responsive: true,
                             maintainAspectRatio: false,
                             plugins: {
-                                legend: { position: 'bottom' },
+                                legend: {display: false},
                                 tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    titleFont: {size: 14},
+                                    bodyFont: {size: 12},
                                     callbacks: {
-                                        label: (item) => `Female: ${item.formattedValue}%`
+                                        label: function (context) {
+                                            return `Enrolled: ${context.parsed.x.toLocaleString()} students`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Number of Enrolled Learners',
+                                        font: {
+                                            size: 14,
+                                            weight: 'bold'
+                                        }
+                                    },
+                                    ticks: {
+                                        callback: value => value.toLocaleString(),
+                                        font: {size: 12},
+                                        color: '#333',
+                                        beginAtZero: true
                                     }
                                 },
-                                title: {
-                                    display: true,
-                                    text: 'Female Enrollment Percentage'
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: 'Regions',
+                                        font: {
+                                            size: 14,
+                                            weight: 'bold'
+                                        }
+                                    },
+                                    ticks: {
+                                        font: {size: 12},
+                                        color: '#333',
+                                        autoSkip: false,
+                                        maxRotation: 0,
+                                        minRotation: 0
+                                    }
                                 }
                             }
                         }
                     });
-                }
-            }
-
-            // Number of Regions
-            const numberOfRegionsDiv = document.getElementById('numberOfRegions');
-            numberOfRegionsDiv.querySelector('.data-value').textContent = data.regionsWithSchools ? data.regionsWithSchools.toLocaleString() : 'N/A';
-        
-
-            // Number of Schools
-            const numberOfSchoolsDiv = document.getElementById('numberOfSchools');
-            numberOfSchoolsDiv.querySelector('.data-value').textContent = data.numberOfSchools ? data.numberOfSchools.toLocaleString() : 'N/A';
-    
-
-            // Number of Year Levels
-            const numberOfYearLevelsDiv = document.getElementById('numberOfYearLevels');
-            numberOfYearLevelsDiv.querySelector('.data-value').textContent = data.numberOfYearLevels ? data.numberOfYearLevels.toLocaleString() : 'N/A';
-
-            // === Enrollment by Region Chart ===
-            fetch('/api/enrollment_data')
-            .then(response => response.json())
-            .then(data => {
-                const regionData = data.enrollmentByRegion || {};
-                const regionLabels = Object.keys(regionData);
-                const regionCounts = Object.values(regionData);
-
-                const ctx = document.getElementById('regionChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'pie',
-                    data: {
-                        labels: regionLabels,
-                        datasets: [{
-                            data: regionCounts,
-                            backgroundColor: regionLabels.map((_, i) =>
-                                `hsl(${i * (360 / regionLabels.length)}, 70%, 60%)`
-                            ),
-                            borderColor: '#fff',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top', // 'top' places the legend above, adjust to 'left' or 'right' for other positions
-                                labels: {
-                                    boxWidth: 12,
-                                    padding: 10
-                                }
-                            },
-                            title: {
-                                display: false // Title is handled in the HTML already
-                            }
-                        }
-                    }
                 });
-            });
-            
-            // Enrollment per Year Level (Radar Chart)
+
+
+            // === Enrollment per Year Level (Radar Chart) ===
             const yearLevelRadarCanvas = document.getElementById('yearLevelRadarChart');
 
             if (data.enrollmentByYearLevel && yearLevelRadarCanvas) {
@@ -1173,11 +1166,12 @@
                             label: 'Enrollment per Year Level',
                             data: yearCounts,
                             fill: true,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: '#36A2EB',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)', // Light Blue Gradient
+                            borderColor: '#36A2EB', // Solid Blue Border
                             borderWidth: 2,
                             pointBackgroundColor: '#36A2EB',
-                            pointRadius: 4
+                            pointRadius: 5,
+                            pointBorderWidth: 2
                         }]
                     },
                     options: {
@@ -1186,26 +1180,30 @@
                         scales: {
                             r: {
                                 angleLines: {
-                                    display: true
+                                    display: true, // Keep angle lines for better directionality
+                                    color: '#ddd' // Lighter angle lines
                                 },
                                 suggestedMin: 0,
-                                suggestedMax: Math.max(...yearCounts) + 50000,
+                                suggestedMax: Math.max(...yearCounts) + 50000, // Dynamic max
                                 ticks: {
-                                    stepSize: 50000,
-                                    maxTicksLimit: 10, // ⬅️ Reduce the number of concentric circles
+                                    stepSize: 50000, // Adjust tick steps for better distribution
+                                    maxTicksLimit: 6, // Less concentric lines for clarity
                                     backdropColor: 'transparent',
-                                    color: '#666',
-                                    display: true // ✅ Hides the numbers, keeps the lines
+                                    color: '#444', // Darker ticks for better visibility
+                                    display: true
                                 }
                             }
                         },
                         plugins: {
-                            legend: {
-                                position: 'top'
-                            },
+                            legend: {display: false},
                             tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleFont: { size: 14 },
+                                bodyFont: { size: 12 },
                                 callbacks: {
-                                    label: (context) => `Enrolled: ${context.raw}`
+                                    label: (context) => {
+                                        return `Enrolled: ${context.raw.toLocaleString()} students`;
+                                    }
                                 }
                             }
                         }
@@ -1213,7 +1211,197 @@
                 });
             }
 
-            // Average Enrollment per Region
+            // === Gender Distribution by Region ===
+            if (data.genderRatioByRegion) {
+                const regionData = data.genderRatioByRegion;
+
+                // Convert Roman numerals to integers for sorting
+                const romanToInt = (roman) => {
+                    const romanMap = {
+                        I: 1, II: 2, III: 3, IV: 4, V: 5, VI: 6, VII: 7,
+                        VIII: 8, IX: 9, X: 10, XI: 11, XII: 12, XIII: 13,
+                        XIV: 14, XV: 15, XVI: 16, XVII: 17, XVIII: 18, XIX: 19, XX: 20
+                    };
+                    return romanMap[roman] || 0;
+                };
+
+                const sortedRegions = Object.keys(regionData).sort((a, b) => {
+                    const romanA = a.replace('Region ', '').trim();
+                    const romanB = b.replace('Region ', '').trim();
+                    return romanToInt(romanA) - romanToInt(romanB);
+                });
+
+                const maleData = sortedRegions.map(region => regionData[region]);
+                const femaleData = sortedRegions.map(region => 100 - regionData[region]);
+
+                new Chart(document.getElementById('genderRatioChart').getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: sortedRegions,
+                        datasets: [
+                            {
+                                label: '% Male',
+                                data: maleData.map(val => -val), // Male values are negative for left alignment
+                                backgroundColor: '#4A90E2', // Stronger Blue
+                                borderColor: '#1C6A92',
+                                borderWidth: 1
+                            },
+                            {
+                                label: '% Female',
+                                data: femaleData,
+                                backgroundColor: '#FF69B4', // Stronger Pink
+                                borderColor: '#F06292',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                stacked: true,
+                                ticks: {
+                                    callback: (value) => `${Math.abs(value)}%`,
+                                    beginAtZero: true,
+                                    color: '#444'
+                                },
+                                title: {
+                                        display: true,
+                                        text: 'Percentage of Enrollment',
+                                        font: {
+                                            size: 14,
+                                            weight: 'bold'
+                                        }
+                                    },
+                                grid: {
+                                    color: '#ccc',
+                                    drawTicks: false
+                                }
+                            },
+                            y: {
+                                stacked: true,
+                                ticks: {color: '#333'},
+                                title: {
+                                        display: true,
+                                        text: 'Regions',
+                                        font: {
+                                            size: 14,
+                                            weight: 'bold'
+                                        }
+                                    }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleFont: { size: 14 },
+                                bodyFont: { size: 12 },
+                                callbacks: {
+                                    label: (context) => {
+                                        const gender = context.dataset.label;
+                                        const value = Math.abs(context.raw);
+                                        return `${gender}: ${value.toFixed(1)}% students`;
+                                    }
+                                }
+                            },
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    color: '#333',
+                                    boxWidth: 14
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // === Top 5 Most Populated Schools (No ChartDataLabels) ===
+            const topSchoolsCanvas = document.getElementById('topSchoolsChart');
+
+            if (data.topSchools && topSchoolsCanvas) {
+                // Sort the schools by enrollment descending
+                const sortedEntries = Object.entries(data.topSchools).sort((a, b) => b[1] - a[1]);
+                const schoolNames = sortedEntries.map(entry => entry[0]);
+                const enrollments = sortedEntries.map(entry => entry[1]);
+
+                new Chart(topSchoolsCanvas.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: schoolNames,
+                        datasets: [{
+                            label: 'Enrollment',
+                            data: enrollments,
+                            backgroundColor: [
+                                '#FF7043',
+                                '#FFB74D',
+                                '#4DB6AC',
+                                '#64B5F6',
+                                '#BA68C8'
+                            ],
+                            borderRadius: 8,
+                            borderColor: ['#E64A19', '#FFA000', '#00897B','#1976D2','#7B1FA2'], // Darker borders for emphasis
+                            borderWidth: 2,
+                            borderSkipped: false
+
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y', // Horizontal bars
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                title: {
+                                        display: true,
+                                        text: 'Numbers of Students',
+                                        font: {
+                                            size: 14,
+                                            weight: 'bold'
+                                        }
+                                    },
+                                ticks: {callback: value => value.toLocaleString()}
+                            },
+                            y: {
+                                ticks: {
+                                    font: {size: 8},
+                                    padding: 6,
+                                    color: '#333'
+                                },
+                                title: {
+                                        display: true,
+                                        text: 'Schools',
+                                        font: {
+                                            size: 14,
+                                            weight: 'bold'
+                                        }
+                                    }
+                            }
+                        },
+                        plugins: {
+                            legend: {display: false},
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleFont: { size: 14 },
+                                bodyFont: { size: 12 },
+                                callbacks: {
+                                    label: context => `Enrolled: ${context.formattedValue} students`
+                                }
+                            },
+                        },
+                        animation: {
+                            duration: 800,
+                            easing: 'easeOutQuart'
+                        }
+                    }
+                });
+            }
+
+
+            // === Average Enrollment per Region ===
             if (data.averageEnrollmentPerRegion) {
                 const regionData = data.averageEnrollmentPerRegion;
 
@@ -1253,113 +1441,57 @@
                         datasets: [{
                             label: 'Average Enrollment',
                             data: sortedValues,
-                            backgroundColor: '#4CAF50'
+                            backgroundColor: '#4CAF50', // Fresh Green
+                            borderColor: '#388E3C', // Darker Green Border
+                            borderWidth: 2,
+                            borderRadius: 8 // Smooth edges for modern look
                         }]
                     },
                     options: {
                         responsive: true,
+                        maintainAspectRatio: false,
                         plugins: {
                             legend: { display: false },
-                            title: { display: true, text: 'Avg Enrollment per Region' }
-                        }
-                    }
-                });
-            }
-            
-            //Gender ratio per region
-            if (data.genderRatioByRegion) {
-                const regionData = data.genderRatioByRegion;
-
-                // Convert Roman numeral to integer for sorting
-                const romanToInt = (roman) => {
-                    const romanMap = {
-                        I: 1, IV: 4, V: 5, IX: 9, X: 10, 
-                        XL: 40, L: 50, XC: 90, C: 100
-                    };
-                    let i = 0, num = 0;
-                    while (i < roman.length) {
-                        const twoChar = roman[i] + (roman[i + 1] || '');
-                        if (romanMap[twoChar]) {
-                            num += romanMap[twoChar];
-                            i += 2;
-                        } else {
-                            num += romanMap[roman[i]];
-                            i += 1;
-                        }
-                    }
-                    return num;
-                };
-
-                // Sort regions by Roman numeral
-                const sortedRegions = Object.keys(regionData).sort((a, b) => {
-                    const romanA = a.replace('Region ', '').trim();
-                    const romanB = b.replace('Region ', '').trim();
-                    return romanToInt(romanA) - romanToInt(romanB);
-                });
-
-                const maleData = sortedRegions.map(region => regionData[region]);
-                const femaleData = maleData.map(val => -(100 - val)); // Negative for diverging bar
-
-                new Chart(document.getElementById('genderRatioChart').getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: sortedRegions,
-                        datasets: [
-                            {
-                                label: '% Male',
-                                data: maleData,
-                                backgroundColor: '#87CEEB', // Sky Blue
-                                borderColor: '#D3D3D3',
-                                borderWidth: 1
-                            },
-                            {
-                                label: '% Female',
-                                data: femaleData,
-                                backgroundColor: '#FFB6C1', // Light Pink
-                                borderColor: '#D3D3D3',
-                                borderWidth: 1
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleFont: { size: 14 },
+                                bodyFont: { size: 12 },
+                                callbacks: {
+                                    title: (tooltipItems) => `${tooltipItems[0].label}`,
+                                    label: (tooltipItem) => `Average Enrolled: ${tooltipItem.raw.toLocaleString()} students`
+                                }
                             }
-                        ]
-                    },
-                    options: {
-                        indexAxis: 'y',
-                        responsive: true,
-                        maintainAspectRatio: false,
+                        },
                         scales: {
                             x: {
-                                stacked: true,
+                                title: {
+                                    display: true,
+                                    text: 'Region',
+                                    font: { size: 14, weight: 'bold' }
+                                },
                                 ticks: {
-                                    callback: (value) => `${Math.abs(value)}%`,
-                                    beginAtZero: true
+                                    font: { size: 12 },
+                                    color: '#333'
                                 }
                             },
                             y: {
-                                stacked: true
-                            }
-                        },
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: 'Gender Ratio by Region (Diverging Bar)'
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: (context) => {
-                                        const label = context.dataset.label;
-                                        const value = Math.abs(context.raw);
-                                        return `${label}: ${value.toFixed(1)}%`;
-                                    }
+                                title: {
+                                    display: true,
+                                    text: 'Enrollment Count',
+                                    font: { size: 14, weight: 'bold' }
+                                },
+                                ticks: {
+                                    font: { size: 12 },
+                                    color: '#333',
+                                    beginAtZero: true
                                 }
-                            },
-                            legend: {
-                                position: 'top'
                             }
                         }
                     }
                 });
             }
-            
-            //SHS enrollment by strand
+
+            // === Senior High Strand Enrollment ===
             if (data.shsEnrollmentByStrand) {
                 const ctx = document.getElementById('shsStrandChart').getContext('2d');
                 const strands = Object.keys(data.shsEnrollmentByStrand);
@@ -1372,27 +1504,126 @@
                         datasets: [{
                             label: 'Enrollment',
                             data: counts,
-                            backgroundColor: '#FFA07A'
+                            backgroundColor: '#FF6347', // A brighter red for better contrast
+                            borderColor: '#FF4500', // Darker red border
+                            borderWidth: 2, // Border width for definition
+                            borderRadius: 8, // Rounded corners for smoother design
+                            hoverBackgroundColor: '#FF4500', // Darker color on hover
+                            hoverBorderColor: '#FF6347' // Lighter border color on hover
                         }]
                     },
                     options: {
                         indexAxis: 'y',
                         responsive: true,
+                        maintainAspectRatio: false,
                         plugins: {
                             legend: { display: false },
-                            title: {
-                                display: true,
-                                text: 'Senior High School Enrollment by Strand'
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleFont: { size: 14 },
+                                bodyFont: { size: 12 },
+                                callbacks: {
+                                    title: (tooltipItems) => `Strand: ${tooltipItems[0].label}`,
+                                    label: (tooltipItem) => `Enrolled: ${tooltipItem.raw.toLocaleString()} students`
+                                }
                             }
                         },
                         scales: {
                             x: {
-                                beginAtZero: true
+                                title: {
+                                    display: true,
+                                    text: 'Enrollment Count',
+                                    font: { size: 14, weight: 'bold' }
+                                },
+                                ticks: {
+                                    font: { size: 12 },
+                                    color: '#333',
+                                    beginAtZero: true
+                                },
+                                grid: {
+                                    color: '#ccc',
+                                    drawTicks: false
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Strand',
+                                    font: { size: 14, weight: 'bold' }
+                                },
+                                ticks: {
+                                    font: { size: 12 },
+                                    color: '#333'
+                                }
                             }
                         }
                     }
                 });
             }
+
+            // === Enrollment by Sector (Doughnut Chart) ===
+            fetch('/api/enrollment_data')
+                .then(response => response.json())
+                .then(data => {
+                    const sectorData = data.enrollmentBySector || {
+                        Public: 0,
+                        Private: 0,
+                        PSO: 0
+                    };
+
+                    const sectorLabels = Object.keys(sectorData);
+                    const sectorCounts = Object.values(sectorData);
+
+                    const ctx = document.getElementById('sectorChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: sectorLabels,
+                            datasets: [{
+                                data: sectorCounts,
+                                backgroundColor: [
+                                    '#2196F3', // Public - Blue
+                                    '#4CAF50', // Private - Green
+                                    '#FF9800'  // PSO - Orange
+                                ],
+                                borderColor: '#ffffff',
+                                borderWidth: 3,
+                                hoverOffset: 10
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        font: {
+                                            size: 12
+                                        },
+                                        color: '#333'
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    titleFont: { size: 14 },
+                                    bodyFont: { size: 12 },
+                                    callbacks: {
+                                        title: context => {
+                                            const sector = context[0].label;
+                                            return `Sector: ${sector}`;
+                                        },
+                                        label: context => {
+                                            const value = context.parsed;
+                                            return `Enrolled: ${value.toLocaleString()} students`;
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
 
 
 

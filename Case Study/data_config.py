@@ -55,6 +55,10 @@ def fetch_summary_data_from_csv(file_path):
         else:
             top_schools = {}
 
+        # Enrollment by divisions and municipalities
+        total_divisions = df['Division'].nunique()
+        total_municipalities = df['Municipality'].nunique()
+
         # Enrollment by Region (count of schools/rows)
         enrollment_by_region = df[region_col].value_counts().to_dict() if region_col else {}
 
@@ -92,7 +96,6 @@ def fetch_summary_data_from_csv(file_path):
                 'G12 ARTS Male', 'G12 ARTS Female'
             ]
         }
-
         enrollment_by_year_level = {}
         for grade, columns in grade_columns.items():
             valid_cols = [col for col in columns if col in df.columns]
@@ -125,17 +128,29 @@ def fetch_summary_data_from_csv(file_path):
             'SPORTS': ['G11 SPORTS Male', 'G11 SPORTS Female', 'G12 SPORTS Male', 'G12 SPORTS Female'],
             'ARTS': ['G11 ARTS Male', 'G11 ARTS Female', 'G12 ARTS Male', 'G12 ARTS Female']
         }
-
         shs_enrollment_by_strand = {}
         for strand, cols in shs_strands.items():
             valid_cols = [col for col in cols if col in df.columns]
             shs_enrollment_by_strand[strand] = int(df[valid_cols].sum().sum()) if valid_cols else 0
+
+        # Enrollment by School Sector
+        if 'Sector' in df.columns:
+            enrollment_by_sector_df = df.groupby('Sector')['TotalEnrollment'].sum()
+            enrollment_by_sector = {
+                sector: int(enrollment)
+                for sector, enrollment in enrollment_by_sector_df.items()
+            }
+        else:
+            enrollment_by_sector = {}
 
         # Final summary
         summary = {
             'totalEnrollments': int(total_enrollments),
             'maleEnrollments': int(total_male),
             'femaleEnrollments': int(total_female),
+            'numberOfDivisions': int(total_divisions),
+            'numberOfMunicipalities': int(total_municipalities),
+            'numberOfSchools': int(number_of_schools),
             'regionsWithSchools': int(number_of_regions),
             'numberOfYearLevels': number_of_year_levels,
             'topSchools': top_schools,
@@ -143,7 +158,8 @@ def fetch_summary_data_from_csv(file_path):
             'enrollmentByYearLevel': enrollment_by_year_level,
             'averageEnrollmentPerRegion': avg_enrollment_per_region,
             'genderRatioByRegion': gender_ratio_by_region,
-            'shsEnrollmentByStrand': shs_enrollment_by_strand
+            'shsEnrollmentByStrand': shs_enrollment_by_strand,
+            'enrollmentBySector': enrollment_by_sector 
         }
 
         if is_school_level:
