@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TANAW: Dashboard</title>
-    <link href="https://fonts.googleapis.com" rel="preconnect"/>
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Candu&amp;family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
-    <link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" referrerpolicy="no-referrer" rel="stylesheet"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TANAW: Dashboard</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Candu&amp;family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" referrerpolicy="no-referrer" rel="stylesheet"/>
     <style>
             /* DepEd Solid Color Palette */
             :root {
@@ -435,18 +435,22 @@
             }
 
             /* Chart Section Below KPIs */
-            #kpi-charts {
+            .kpi-charts {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(300px, 2fr));
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
                 gap: 15px;
-                padding: 10px;
+                width: 100%;
+                box-sizing: border-box;
+                margin-bottom: 15px;
             }
 
             .chart-container {
                 width: 100%;
+                max-width: 100%;
                 height: 400px;
-                position: relative;
-                margin-top: 20px;
+                min-height: 300px;
+                padding: 10px;
+                box-sizing: border-box;
             }
 
             .legend-container {
@@ -478,8 +482,10 @@
             }
             
             canvas {
-                width: auto !important;
-                height: auto !important;
+                width: 100% !important;
+                height: 100% !important;
+                max-width: 100%;
+                max-height: 100%;
             }
 
             .single-value-visual {
@@ -865,7 +871,7 @@
         </div>
     </section>
 
-    <section id="kpi-charts"> <!-- Visual Data Charts (Separate Layout) -->
+    <section class="kpi-charts"> <!-- Visual Data Charts (Separate Layout) -->
         <div id="genderEnrollmentChartCard" class="kpi-card"> <!--KPI Gender Enrollment Bar -->
             <h3><i class="fas fa-venus-mars"></i> Enrollment by Gender</h3>
             <!-- <div class="loading-spinner"></div> -->
@@ -891,7 +897,7 @@
             <p class="data-value"></p>
         </div>
     </section>
-    <section id="kpi-charts"> <!-- Visual Data Charts (Separate Layout) -->
+    <section class="kpi-charts"> <!-- Visual Data Charts (Separate Layout) -->
         <div id="genderRatioByRegionCard" class="kpi-card"> <!-- Gender Distribution by Region -->
             <h3><i class="fas fa-venus-mars"></i> Gender Distribution by Region</h3>
             <div class="chart-container">
@@ -908,7 +914,7 @@
             <p class="data-value"></p>
         </div>
     </section>
-    <section id="kpi-charts"> <!-- Visual Data Charts (Separate Layout) -->
+    <section class="kpi-charts"> <!-- Visual Data Charts (Separate Layout) -->
         <div id="avgEnrollmentPerRegionCard" class="kpi-card"> <!-- Average Enrollment Per Region -->
             <h3><i class="fas fa-chart-bar"></i> Average Enrollment Per Region</h3>
             <div class="chart-container">
@@ -924,7 +930,7 @@
             </div>
         </div>        
     </section>
-    <section id="kpi-charts"> <!-- Visual Data Charts (Separate Layout) -->
+    <section class="kpi-charts"> <!-- Visual Data Charts (Separate Layout) -->
         <div id="sectorEnrollmentCard" class="kpi-card" > <!-- Sector Enrollment Doughnut Chart -->
             <h3><i class="fas fa-building"></i> Enrollment by Sector</h3>
             <div class="chart-container" >
@@ -966,31 +972,59 @@
         function updateKPIs(data) {
             const kpisSection = document.getElementById('kpis');
             kpisSection.querySelectorAll('.loading-spinner').forEach(spinner => spinner.style.display = 'none');
-            
-            // Total Enrollments KPI 
+
+            // Total Enrollments KPI
             const totalEnrollmentsDiv = document.getElementById('totalEnrollments');
-            totalEnrollmentsDiv.querySelector('.data-value').textContent = data.totalEnrollments ? data.totalEnrollments.toLocaleString() : 'N/A';
-            
+            const totalEnrollmentsValue = totalEnrollmentsDiv.querySelector('.data-value');
+            if (data.totalEnrollments) {
+                animateCountUp(totalEnrollmentsValue, data.totalEnrollments);
+            } else {
+                totalEnrollmentsValue.textContent = 'N/A';
+            }
+
             // Number of Schools
             const numberOfSchoolsDiv = document.getElementById('numberOfSchools');
-            numberOfSchoolsDiv.querySelector('.data-value').textContent = data.numberOfSchools ? data.numberOfSchools.toLocaleString() : 'N/A';
+            const numberOfSchoolsValue = numberOfSchoolsDiv.querySelector('.data-value');
+            if (data.numberOfSchools) {
+                animateCountUp(numberOfSchoolsValue, data.numberOfSchools);
+            } else {
+                numberOfSchoolsValue.textContent = 'N/A';
+            }
 
             // Number of Year Levels
             const numberOfYearLevelsDiv = document.getElementById('numberOfYearLevels');
-            numberOfYearLevelsDiv.querySelector('.data-value').textContent = data.numberOfYearLevels ? data.numberOfYearLevels.toLocaleString() : 'N/A';
-            
+            const numberOfYearLevelsValue = numberOfYearLevelsDiv.querySelector('.data-value');
+            if (data.numberOfYearLevels) {
+                animateCountUp(numberOfYearLevelsValue, data.numberOfYearLevels);
+            } else {
+                numberOfYearLevelsValue.textContent = 'N/A';
+            }
+
             // Number of Regions
             const numberOfRegionsDiv = document.getElementById('numberOfRegions');
-            numberOfRegionsDiv.querySelector('.data-value').textContent = data.regionsWithSchools ? data.regionsWithSchools.toLocaleString() : 'N/A';
+            const numberOfRegionsValue = numberOfRegionsDiv.querySelector('.data-value');
+            if (data.regionsWithSchools) {
+                animateCountUp(numberOfRegionsValue, data.regionsWithSchools);
+            } else {
+                numberOfRegionsValue.textContent = 'N/A';
+            }
 
             // Number of Divisions
             const numberOfDivisionsSpan = document.getElementById("divisionsValue");
-            numberOfDivisionsSpan.textContent = data.numberOfDivisions ? data.numberOfDivisions.toLocaleString() : 'N/A';
+            if (data.numberOfDivisions) {
+                animateCountUp(numberOfDivisionsSpan, data.numberOfDivisions);
+            } else {
+                numberOfDivisionsSpan.textContent = 'N/A';
+            }
 
             // Number of Municipalities
             const numberOfMunicipalitiesSpan = document.getElementById("municipalitiesValue");
-            numberOfMunicipalitiesSpan.textContent = data.numberOfMunicipalities ? data.numberOfMunicipalities.toLocaleString() : 'N/A';
-           
+            if (data.numberOfMunicipalities) {
+                animateCountUp(numberOfMunicipalitiesSpan, data.numberOfMunicipalities);
+            } else {
+                numberOfMunicipalitiesSpan.textContent = 'N/A';
+            }
+
             // === Total Enrollments Bar Chart (Comparing Male and Female) ===
             const genderEnrollment = document.getElementById('genderEnrollmentChart')?.getContext('2d');
             if (genderEnrollment) {
@@ -1745,5 +1779,28 @@ document.querySelectorAll('.kpi-card').forEach(card => {
     });
 });
 </script>
+<script>
+        function animateCountUp(element, endValue, duration = 1200) {
+        let startValue = 0;
+        let startTime = null;
+
+        const step = (timestamp) => {
+            if (!startTime) startTime = timestamp;
+            const progress = timestamp - startTime;
+            const percentage = Math.min(progress / duration, 1);
+            const current = Math.floor(percentage * endValue);
+
+            element.textContent = current.toLocaleString();
+
+            if (percentage < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                element.textContent = endValue.toLocaleString(); // Final value
+            }
+        };
+
+        window.requestAnimationFrame(step);
+    }
+</script>    
 </body>
 </html>
