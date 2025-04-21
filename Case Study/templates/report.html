@@ -1,14 +1,15 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TANAW: Report Analytics - Enhanced</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Candu&family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TANAW: Report Analytics - Enhanced</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Candu&amp;family=Montserrat:wght@400;600;700&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" referrerpolicy="no-referrer" rel="stylesheet">
+<style>
         /* DepEd Solid Color Palette */
         :root {
             --deped-blue: #00308F; /* Deep Blue */
@@ -627,69 +628,109 @@
             from { transform: translateX(15px); opacity: 0; }
             to { opacity: 1; transform: translateX(0); opacity: 1; }
         }
-    </style>
-</head>
+    
+.action-button.animated.pulse-hover:hover {
+    animation: pulse-btn 0.4s ease-in-out;
+}
+
+@keyframes pulse-btn {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+
+/* Ripple Effect */
+.action-button {
+    position: relative;
+    overflow: hidden;
+}
+
+.action-button .ripple {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple-effect 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple-effect {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Enhanced container style */
+.geographic-view-container {
+    border: 3px solid var(--deped-blue);
+    background: linear-gradient(145deg, #f4f9ff, #e0ecf7);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.geographic-view-container:hover {
+    transform: scale(1.01);
+    box-shadow: 0 15px 25px rgba(0,0,0,0.15);
+}
+</style>
+</link></head>
 <body>
-    <header>
-        <div class="logo-area">
-            <img src="/static/logo (1).png" alt="DepEd Logo"> <h1>TRACKING & ANALYTICS FOR NATIONWIDE ACADEMIC WATCH</h1>
-        </div>
+<header>
+<div class="logo-area">
+<img alt="DepEd Logo" src="/static/logo (1).png"/> <h1>TRACKING &amp; ANALYTICS FOR NATIONWIDE ACADEMIC WATCH</h1>
+</div>
+<div class="header-right">
+<nav>
+<ul>
+<li><a href="/home"><i class="fas fa-home"></i> Home</a></li>
+<li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+<li><a href="/report"><i class="fas fa-file-alt"></i> Reports</a></li>
+<li><a href="#" id="accountBtn"><i class="fas fa-user-circle"></i></a></li>
+</ul>
+</nav>
+<div class="hamburger-menu" id="hamburger">
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+</div>
+</div>
+<div class="mobile-nav-overlay" id="navOverlay"></div>
+<div class="mobile-nav" id="mobileNav">
+<button class="close-btn" id="closeNav"><i class="fas fa-times"></i></button>
+<ul>
+<li><a href="/home"><i class="fas fa-home"></i> Home</a></li>
+<li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+<li><a href="/report"><i class="fas fa-file-alt"></i> Reports</a></li>
+<li><a href="/upload"><i class="fas fa-cogs"></i> Admin</a></li>
+<li><a href="/help"><i class="fas fa-question-circle"></i> Help</a></li>
+<li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+</ul>
+</div>
+</header>
+<div class="account-popup" id="accountPopup">
+<h4>Account</h4>
+<button onclick="window.location.href='/upload'"><i class="fas fa-cogs"></i> Admin</button>
+<button onclick="window.location.href='/help'"><i class="fas fa-question-circle"></i> Help</button>
+<button onclick="window.location.href='/logout'"><i class="fas fa-sign-out-alt"></i> Logout</button>
+</div>
+<section id="geographic-view-section">
+<div class="geographic-view-container">
+<div class="geographic-view-header">
 
-        <div class="header-right">
-            <nav>
-                <ul>
-                    <li><a href="/home"><i class="fas fa-home"></i> Home</a></li>
-                    <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                    <li><a href="/report"><i class="fas fa-file-alt"></i> Reports</a></li>
-                    <li><a href="#" id="accountBtn"><i class="fas fa-user-circle"></i></a></li>
-                </ul>
-            </nav>
-            <div class="hamburger-menu" id="hamburger">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-            </div>
-        </div>
-        <div class="mobile-nav-overlay" id="navOverlay"></div>
-        <div class="mobile-nav" id="mobileNav">
-            <button class="close-btn" id="closeNav"><i class="fas fa-times"></i></button>
-            <ul>
-                <li><a href="/home"><i class="fas fa-home"></i> Home</a></li>
-                <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li><a href="/report"><i class="fas fa-file-alt"></i> Reports</a></li>
-                <li><a href="/upload"><i class="fas fa-cogs"></i> Admin</a></li>
-                <li><a href="/help"><i class="fas fa-question-circle"></i> Help</a></li>
-                <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-            </ul>
-        </div>
-    </header>
-
-    <div class="account-popup" id="accountPopup">
-        <h4>Account</h4>
-        <button onclick="window.location.href='/upload'"><i class="fas fa-cogs"></i> Admin</button>
-        <button onclick="window.location.href='/help'"><i class="fas fa-question-circle"></i> Help</button>
-        <button onclick="window.location.href='/logout'"><i class="fas fa-sign-out-alt"></i> Logout</button>
-    </div>
-
-    <section id="geographic-view-section">
-        <div class="geographic-view-container">
-            <div class="geographic-view-header">
-                <a href="/otheryear" class="action-button" id="filterYearBtn">
-                    <i class="fas fa-filter"></i> Filter Year
+<a class="action-button animated pulse-hover" href="/comparison" id="compareYearBtn" style="margin-right:auto;">
+<i class="fas fa-exchange-alt"></i> Compare Other Years
                 </a>
-                <a href="/comparison" class="action-button" id="compareYearBtn">
-                    <i class="fas fa-exchange-alt"></i> Compare
-                </a>
-            </div>
-            <div class="geographic-view-content">
-                <iframe id="reportFrame" src="/dashreport/" frameborder="0" style="width:100%; height:2500px;"></iframe>
-            </div>
-        </div>
-    </section>
-
-    <button onclick="scrollToTop()" class="back-to-top"><i class="fas fa-arrow-up"></i></button>
-
-    <script>
+</div>
+<div class="geographic-view-content">
+<iframe frameborder="0" id="reportFrame" src="/dashreport/" style="width:100%; height:2500px;"></iframe>
+</div>
+</div>
+</section>
+<button class="back-to-top" onclick="scrollToTop()"><i class="fas fa-arrow-up"></i></button>
+<script>
         document.addEventListener('DOMContentLoaded', function() {
             const hamburger = document.getElementById('hamburger');
             const mobileNav = document.getElementById('mobileNav');
@@ -753,21 +794,20 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
-
 <footer>
-    <div>
-        <h4><i class="fas fa-university" style="margin-right: 10px;"></i> Department of Education</h4>
-        <p>Empowering the Nation Through Quality Education.</p>
-        <hr>
-        <div>
-            <a href="/home">Home</a>
-            <a href="/dashboard">Dashboard</a>
-            <a href="/report">Reports</a>
-            <a href="/help">Help</a>
-            <a href="/upload">Admin</a>
-        </div>
-        <p id="copyright">© 2025 DepEd Enrollment Dashboard. All rights reserved.</p>
-    </div>
+<div>
+<h4><i class="fas fa-university" style="margin-right: 10px;"></i> Department of Education</h4>
+<p>Empowering the Nation Through Quality Education.</p>
+<hr/>
+<div>
+<a href="/home">Home</a>
+<a href="/dashboard">Dashboard</a>
+<a href="/report">Reports</a>
+<a href="/help">Help</a>
+<a href="/upload">Admin</a>
+</div>
+<p id="copyright">© 2025 DepEd Enrollment Dashboard. All rights reserved.</p>
+</div>
 </footer>
 <script>
     function updateCopyrightYear() {
@@ -793,6 +833,28 @@
     }
     
 </script>
-
-</body>
+<script>
+document.querySelectorAll('.action-button').forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+        btn.style.transform = 'scale(1.05) rotate(1deg)';
+        btn.style.transition = 'all 0.3s ease-in-out';
+    });
+    btn.addEventListener('mouseleave', () => {
+        btn.style.transform = 'scale(1)';
+    });
+});
+</script><script>
+// Enhance buttons with ripple effect and glow on click
+document.querySelectorAll('.action-button').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        // Ripple effect
+        const circle = document.createElement('span');
+        circle.classList.add('ripple');
+        circle.style.left = `${e.clientX - btn.getBoundingClientRect().left}px`;
+        circle.style.top = `${e.clientY - btn.getBoundingClientRect().top}px`;
+        btn.appendChild(circle);
+        setTimeout(() => circle.remove(), 600);
+    });
+});
+</script></body>
 </html>

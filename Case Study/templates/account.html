@@ -1,238 +1,254 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Sign In</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        :root {
-            --primary-color: #1E3A8A; /* A deeper blue */
-            --secondary-color: #F9A825; /* A more muted yellow */
-            --text-dark: #212121;
-            --text-light: #757575;
-            --bg-light: #F5F5F5;
-            --border-radius: 8px;
-            --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease-in-out;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DepEd Admin Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--primary-color);
-            color: var(--text-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            background-image: url('/static/deped_background_minimal.png'); /* Replace with a more minimalist background */
-            background-size: cover;
-            background-position: center;
-            overflow: hidden;
-        }
+  <style>
+    :root {
+      --primary: #002147;
+      --secondary: #ffc107;
+      --accent: #d32f2f;
+      --success: #388e3c;
+      --text: #212121;
+      --bg: #f0f4f8;
+      --radius: 10px;
+      --transition: 0.3s ease;
+    }
 
-        .signin-container {
-            background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white */
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            padding: 40px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeIn 0.4s ease-out 0.2s forwards;
-        }
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
 
-        h2 {
-            color: var(--primary-color);
-            margin-bottom: 25px;
-            font-weight: 500;
-            font-size: 2.2rem;
-            letter-spacing: -0.3px;
-        }
+    .background-decor {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: radial-gradient(circle at top left, var(--secondary) 0%, transparent 70%),
+                  radial-gradient(circle at bottom right, var(--primary) 0%, transparent 70%);
+      z-index: 0;
+      opacity: 0.1;
+    }
 
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-            position: relative;
-        }
+    .login-card {
+      position: relative;
+      background: white;
+      border-radius: var(--radius);
+      padding: 50px 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      z-index: 1;
+      animation: fadeIn 0.8s ease-out;
+    }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-dark);
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
+    .login-card img {
+      width: 200px;
+      display: block;
+      margin: 0 auto 20px;
+    }
 
-        .form-group input[type="email"],
-        .form-group input[type="password"],
-        .form-group input[type="text"] {
-            width: calc(100% - 30px);
-            padding: 10px 15px;
-            border: 1px solid #ccc;
-            border-radius: var(--border-radius);
-            box-sizing: border-box;
-            font-size: 1rem;
-            transition: border-color var(--transition);
-        }
+    h2 {
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: 30px;
+    }
 
-        .form-group input[type="email"]:focus,
-        .form-group input[type="password"]:focus,
-        .form-group input[type="text"]:focus {
-            border-color: var(--secondary-color);
-            outline: none;
-            box-shadow: 0 0 5px rgba(249, 168, 37, 0.3);
-        }
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
 
-        .form-group .password-toggle {
-            position: absolute;
-            right: 10px;
-            top: 35px;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: var(--text-light);
-            font-size: 0.85rem;
-        }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: var(--primary);
+    }
 
-        button {
-            background-color: var(--secondary-color);
-            color: var(--primary-color);
-            padding: 12px 25px;
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: background-color var(--transition), transform 0.2s ease-in-out;
-            width: 100%;
-            box-shadow: var(--box-shadow);
-        }
+    input {
+      width: 100%;
+      padding: 10px 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: var(--radius);
+      transition: border var(--transition), box-shadow var(--transition);
+    }
 
-        button:hover {
-            background-color: #F57F17; /* Darker shade of secondary */
-            transform: translateY(-2px);
-        }
+    input:focus {
+      border-color: var(--secondary);
+      outline: none;
+      box-shadow: 0 0 8px rgba(255, 193, 7, 0.3);
+    }
 
-        button:active {
-            transform: translateY(1px);
-        }
+    .password-toggle {
+      position: absolute;
+      top: 18px;
+      right: 15px;
+      cursor: pointer;
+      color: var(--primary);
+    }
 
-        .error-message {
-            color: #D32F2F; /* A more subtle red */
-            margin-top: 10px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            text-align: center;
-            animation: shake 0.3s ease-in-out;
-        }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+    }
 
-        .success-message {
-            color: #388E3C; /* A more subtle green */
-            margin-top: 10px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            text-align: center;
-            animation: fadeIn 0.3s ease-out;
-        }
+    button:hover {
+      background-color: #003366;
+      transform: translateY(-2px);
+    }
 
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    .message {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-    </style>
+    .error {
+      color: var(--accent);
+    }
+
+    .success {
+      color: var(--success);
+    }
+
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #777;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .floating-label {
+      position: relative;
+    }
+
+    .floating-label input {
+      padding-top: 18px;
+    }
+
+    .floating-label label {
+      position: absolute;
+      top: 10px;
+      left: 15px;
+      font-size: 0.9rem;
+      color: #999;
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+
+    .floating-label input:focus + label,
+    .floating-label input:not(:placeholder-shown) + label {
+      top: -10px;
+      left: 12px;
+      font-size: 0.75rem;
+      background: white;
+      padding: 0 5px;
+      color: var(--primary);
+    }
+  </style>
 </head>
 <body>
-    <div class="signin-container">
-        <h2>Admin Sign In</h2>
-        <form id="adminSignInForm">
-            <div class="form-group">
-                <label for="firstName">First Name:</label>
-                <input type="text" id="firstName" name="firstName" required>
-            </div>
-            <div class="form-group">
-                <label for="lastName">Last Name:</label>
-                <input type="text" id="lastName" name="lastName" required>
-            </div>
-            <div class="form-group">
-                <label for="email">Email Address:</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-                <i class="fas fa-eye password-toggle" id="togglePassword"></i>
-            </div>
-            <button type="submit" id="signInButton">Sign In</button>
-            <div id="errorMessage" class="error-message" style="display: none;"></div>
-            <div id="successMessage" class="success-message" style="display: none;"></div>
-        </form>
-    </div>
+  <div class="background-decor"></div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const adminSignInForm = document.getElementById('adminSignInForm');
-            const firstNameInput = document.getElementById('firstName');
-            const lastNameInput = document.getElementById('lastName');
-            const emailInput = document.getElementById('email');
-            const passwordInput = document.getElementById('password');
-            const errorMessageDiv = document.getElementById('errorMessage');
-            const successMessageDiv = document.getElementById('successMessage');
-            const signInButton = document.getElementById('signInButton');
-            const togglePasswordIcon = document.getElementById('togglePassword');
-    
-            togglePasswordIcon.addEventListener('click', function() {
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                this.classList.toggle('fa-eye');
-                this.classList.toggle('fa-eye-slash');
-            });
-    
-            adminSignInForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                const firstName = firstNameInput.value;
-                const lastName = lastNameInput.value;
-                const email = emailInput.value;
-                const password = passwordInput.value;
-    
-                signInButton.disabled = true;
-                signInButton.textContent = 'Signing In...';
-    
-                setTimeout(function() {
-                    if (email.endsWith(".edu.ph") && password === "deped123") {
-                        localStorage.setItem('firstName', firstName);
-                        localStorage.setItem('lastName', lastName);
-                        localStorage.setItem('email', email); // Save the email to localStorage
-                        errorMessageDiv.style.display = 'none';
-                        successMessageDiv.textContent = "Login Successful!";
-                        successMessageDiv.style.display = 'block';
-                        setTimeout(function() {
-                            window.location.href = '/home';
-                        }, 800); // Slightly faster redirect
-                    } else {
-                        successMessageDiv.style.display = 'none';
-                        errorMessageDiv.textContent = "Invalid credentials.";
-                        errorMessageDiv.style.display = 'block';
-                        signInButton.disabled = false;
-                        signInButton.textContent = 'Sign In';
-                    }
-                }, 1200); // Slightly faster simulation
-            });
-    
-            emailInput.focus();
-        });
-    </script>
+  <div class="login-card">
+        <img src="/static/logo (2).png" alt="DepEd Logo" style="height: 100px;">
+    <h2>Admin Sign In</h2>
+    <form id="loginForm">
+      <div class="form-group floating-label">
+        <input type="text" id="firstName" placeholder=" " required>
+        <label for="firstName">First Name</label>
+      </div>
+      <div class="form-group floating-label">
+        <input type="text" id="lastName" placeholder=" " required>
+        <label for="lastName">Last Name</label>
+      </div>
+      <div class="form-group floating-label">
+        <input type="email" id="email" placeholder=" " required>
+        <label for="email">Email</label>
+      </div>
+      <div class="form-group floating-label">
+        <input type="password" id="password" placeholder=" " required>
+        <label for="password">Password</label>
+        <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+      </div>
+      <button type="submit" id="submitBtn">Sign In</button>
+      <div id="feedback" class="message"></div>
+    </form>
+    <div class="footer">
+      &copy; 2025 Department of Education | Internal Use Only
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const passwordInput = document.getElementById('password');
+      const toggle = document.getElementById('togglePassword');
+      const feedback = document.getElementById('feedback');
+      const form = document.getElementById('loginForm');
+      const btn = document.getElementById('submitBtn');
+
+      toggle.addEventListener('click', () => {
+        const type = passwordInput.type === 'password' ? 'text' : 'password';
+        passwordInput.type = type;
+        toggle.classList.toggle('fa-eye');
+        toggle.classList.toggle('fa-eye-slash');
+      });
+
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        feedback.className = 'message';
+        btn.disabled = true;
+        btn.textContent = 'Signing in...';
+
+        setTimeout(() => {
+          const email = document.getElementById('email').value;
+          const password = passwordInput.value;
+
+          if (email.endsWith('.edu.ph') && password === 'deped123') {
+            localStorage.setItem('firstName', document.getElementById('firstName').value);
+            localStorage.setItem('lastName', document.getElementById('lastName').value);
+            localStorage.setItem('email', email);
+            feedback.textContent = 'Login successful!';
+            feedback.classList.add('success');
+            setTimeout(() => window.location.href = '/home', 1000);
+          } else {
+            feedback.textContent = 'Invalid credentials.';
+            feedback.classList.add('error');
+            btn.disabled = false;
+            btn.textContent = 'Sign In';
+          }
+        }, 1000);
+      });
+    });
+  </script>
 </body>
 </html>

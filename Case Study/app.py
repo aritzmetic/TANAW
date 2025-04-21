@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, flash, jsonify, url
 import os
 from works import create_dash_app
 from werkzeug.utils import secure_filename
-from data_config import get_dataset_path, fetch_enrollment_records_from_csv, fetch_summary_data_from_csv
+from data_config import get_dataset_path, fetch_enrollment_records_from_csv, fetch_summary_data_from_csv, get_strand_distribution_by_region
 from data_cleaning import clean_data
 from datetime import datetime
 from report import create_dash_app_report
@@ -149,6 +149,7 @@ def get_enrollment_data():
     file_path = get_dataset_path()
     data = fetch_enrollment_records_from_csv(file_path)
     data = fetch_summary_data_from_csv(file_path)
+    data['strandRegionMatrix'] = get_strand_distribution_by_region(file_path)
     return jsonify(data)
 
 @app.route('/rerun_app', methods=['POST'])
@@ -192,9 +193,9 @@ if __name__ == "__main__":
 # Triggering auto-reload at 2025-04-20 11:10:36
 # Triggering auto-reload at 2025-04-20 11:14:45
 # Triggering auto-reload at 2025-04-21 08:27:15
-# Triggering auto-reload at 2025-04-21 08:49:13
-# Triggering auto-reload at 2025-04-21 12:14:52
-# Triggering auto-reload at 2025-04-21 12:31:25
-# Triggering auto-reload at 2025-04-21 12:32:26
-# Triggering auto-reload at 2025-04-21 14:41:32
-# Triggering auto-reload at 2025-04-21 14:53:15
+# Triggering auto-reload at 2025-04-21 15:36:30
+# Triggering auto-reload at 2025-04-21 15:40:16
+# Triggering auto-reload at 2025-04-21 15:55:45
+# Triggering auto-reload at 2025-04-21 17:01:20
+# Triggering auto-reload at 2025-04-21 17:22:14
+# Triggering auto-reload at 2025-04-21 17:40:46

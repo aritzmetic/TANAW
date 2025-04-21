@@ -1,4 +1,4 @@
-/* assets/style.css */
+/* Base styles */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
@@ -18,6 +18,12 @@ body {
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.06);
     border-radius: 14px;
     margin: 25px auto;
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 h1 {
@@ -38,6 +44,7 @@ h2 {
     font-weight: 500;
 }
 
+/* Filters */
 .filters-container {
     display: flex;
     flex-wrap: wrap;
@@ -49,10 +56,11 @@ h2 {
     border-radius: 10px;
     border: 1px solid #ddd;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    border-left: 3px solid #3498db;
 }
 
 .filter-item {
-    flex: 1 0 calc(33% - 20px); /* Adjust width as needed */
+    flex: 1 0 calc(33% - 20px);
     min-width: 240px;
 }
 
@@ -64,16 +72,11 @@ h2 {
     font-size: 0.9rem;
 }
 
-.dropdown, .radio-items {
-    margin-bottom: 15px;
-}
-
 .dropdown .Select-control {
     border: 1px solid #ccc;
     border-radius: 6px;
     padding: 8px 12px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-    transition: border-color 0.3s ease;
     font-size: 0.9rem;
 }
 
@@ -81,27 +84,7 @@ h2 {
     border-color: #3498db;
 }
 
-.dropdown .Select-value-label {
-    color: #333;
-    font-size: 0.85rem;
-}
-
-.dropdown .Select-placeholder {
-    color: #999;
-    font-size: 0.85rem;
-}
-
-.radio-items label {
-    margin-right: 18px;
-    font-size: 0.85rem;
-    color: #666;
-    cursor: pointer;
-}
-
-.radio-items input[type="radio"] {
-    margin-right: 4px;
-}
-
+/* Buttons */
 .reset-button, .download-button {
     background-color: #3498db;
     color: white;
@@ -110,41 +93,98 @@ h2 {
     border-radius: 8px;
     cursor: pointer;
     font-size: 0.9rem;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
     margin-top: 20px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .reset-button:hover, .download-button:hover {
     background-color: #2980b9;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 0 12px #3498db;
+    animation: pulse 0.5s ease-in-out;
 }
 
+.reset-button:active::after, .download-button:active::after {
+    content: "";
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(2.5);
+    opacity: 1;
+    transition: transform 0.5s, opacity 1s;
+    pointer-events: none;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.reset-button::before {
+    content: '🔄 ';
+    margin-right: 5px;
+}
+
+/* KPI cards */
 .kpi-cards-container {
     display: flex;
-    flex-wrap: nowrap; /* Changed to nowrap */
+    flex-wrap: nowrap;
     gap: 25px;
     margin-bottom: 40px;
-    overflow-x: auto; /* Added horizontal scroll for smaller screens */
-    padding: 10px 0; /* Add some padding for better visual spacing */
+    overflow-x: auto;
+    padding: 10px 0;
     justify-content: center;
+    position: relative;
 }
+
+.kpi-cards-container::before,
+.kpi-cards-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: #eee;
+    opacity: 0.5;
+}
+
+.kpi-cards-container::before { left: 0; }
+.kpi-cards-container::after { right: 0; }
 
 .kpi-card {
     background-color: #fff;
     padding: 25px;
     border-radius: 10px;
     text-align: center;
-    width: calc(25% - 25px); /* Adjusted width for four cards */
-    min-width: 180px; /* Increased minimum width */
+    width: calc(25% - 25px);
+    min-width: 180px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
     border: 1px solid #eee;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    opacity: 0;
+    animation: fadeInUp 0.8s forwards;
+}
+
+.kpi-card:nth-child(1) { animation-delay: 0.1s; }
+.kpi-card:nth-child(2) { animation-delay: 0.2s; }
+.kpi-card:nth-child(3) { animation-delay: 0.3s; }
+.kpi-card:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 .kpi-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: scale(1.04);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
 }
 
 .kpi-title {
@@ -158,9 +198,14 @@ h2 {
     font-size: 1.8rem;
     font-weight: bold;
     color: #3498db;
-    text-align: center; /* Added this line */
+    text-align: center;
 }
 
+.kpi-card:nth-child(4) .kpi-value {
+    color: #e67e22;
+}
+
+/* Graphs */
 .row {
     display: flex;
     justify-content: space-between;
@@ -175,8 +220,22 @@ h2 {
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
     border: 1px solid #eee;
+    animation: fadeInGraph 0.8s ease-out;
 }
 
+.graph-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+    border-color: #3498db;
+    transition: all 0.3s ease;
+}
+
+@keyframes fadeInGraph {
+    from {opacity: 0; transform: translateY(10px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* Table */
 .table-container {
     background-color: #fff;
     padding: 20px;
@@ -186,7 +245,6 @@ h2 {
     overflow-x: auto;
 }
 
-/* Style for the DataTable */
 .dash-spreadsheet {
     border: 1px solid #ddd;
     border-radius: 6px;
@@ -209,52 +267,7 @@ h2 {
     border-bottom: none;
 }
 
-/* Subtle background for the main content area */
-.main-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.005); /* Even more subtle overlay */
-    border-radius: 14px;
-    pointer-events: none; /* Allows interaction with elements underneath */
-    z-index: -1;
-}
-
-/* Add a subtle separator for the KPI cards */
-.kpi-cards-container::before,
-.kpi-cards-container::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background-color: #eee;
-    opacity: 0.5;
-}
-
-.kpi-cards-container::before {
-    left: 0;
-}
-
-.kpi-cards-container::after {
-    right: 0;
-}
-
-/* Slightly different color for the "Most Populated Year Level" KPI value */
-.kpi-card:nth-child(4) .kpi-value {
-    color: #e67e22; /* Orange color */
-}
-
-/* Add a subtle icon to the Reset Filters button (you might need to include a font library like Font Awesome for actual icons) */
-.reset-button::before {
-    content: '🔄 '; /* Using a Unicode character as a placeholder */
-    margin-right: 5px;
-}
-
-/* Add a subtle border to the filters */
-.filters-container {
-    border-left: 3px solid #3498db;
+.dash-spreadsheet tbody tr:hover {
+    background-color: #f0f8ff;
+    transition: background-color 0.3s ease;
 }

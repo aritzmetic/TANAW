@@ -82,7 +82,9 @@ def fetch_summary_data_from_csv(file_path):
         # Enrollment by region
         try:
             if region_col:
-                summary['enrollmentByRegion'] = df[region_col].value_counts().to_dict()
+                summary['enrollmentByRegion'] = (
+                    df.groupby(region_col)['TotalEnrollment'].sum().astype(int).to_dict()
+                )
         except Exception as e:
             print(f"Enrollment by region error: {e}")
 
@@ -131,11 +133,22 @@ def fetch_summary_data_from_csv(file_path):
 
         # Average enrollment per region
         try:
-            if region_col:
+            if region_col and 'BEIS School ID' in df.columns:
+                # Clean up and ensure numeric
+                df['TotalEnrollment'] = pd.to_numeric(df['TotalEnrollment'], errors='coerce')
+                
+                # Group by region and school to get total enrollment per school
+                school_enrollment = df.groupby(['BEIS School ID', region_col])['TotalEnrollment'].sum().reset_index()
+
+                # Group by region and compute average enrollment across schools
                 avg_enrollment = (
-                    df.groupby(region_col)['TotalEnrollment'].mean()
-                    .round(2).astype(int).to_dict()
+                    school_enrollment.groupby(region_col)['TotalEnrollment']
+                    .mean()
+                    .round(2)
+                    .astype(int)
+                    .to_dict()
                 )
+
                 summary['averageEnrollmentPerRegion'] = avg_enrollment
         except Exception as e:
             print(f"Average enrollment error: {e}")
@@ -185,3 +198,40 @@ def fetch_summary_data_from_csv(file_path):
     except Exception as e:
         print(f"Error processing summary data: {e}")
         return {}
+    
+def get_strand_distribution_by_region(file_path):
+    try:
+        df = pd.read_csv(file_path)
+        df.columns = df.columns.str.strip()
+
+        shs_strands = {
+            'ABM': ['G11 ACAD - ABM Male', 'G11 ACAD - ABM Female', 'G12 ACAD - ABM Male', 'G12 ACAD - ABM Female'],
+            'HUMSS': ['G11 ACAD - HUMSS Male', 'G11 ACAD - HUMSS Female', 'G12 ACAD - HUMSS Male', 'G12 ACAD - HUMSS Female'],
+            'STEM': ['G11 ACAD STEM Male', 'G11 ACAD STEM Female', 'G12 ACAD STEM Male', 'G12 ACAD STEM Female'],
+            'GAS': ['G11 ACAD GAS Male', 'G11 ACAD GAS Female', 'G12 ACAD GAS Male', 'G12 ACAD GAS Female'],
+            'PBM': ['G11 ACAD PBM Male', 'G11 ACAD PBM Female', 'G12 ACAD PBM Male', 'G12 ACAD PBM Female'],
+            'TVL': ['G11 TVL Male', 'G11 TVL Female', 'G12 TVL Male', 'G12 TVL Female'],
+            'SPORTS': ['G11 SPORTS Male', 'G11 SPORTS Female', 'G12 SPORTS Male', 'G12 SPORTS Female'],
+            'ARTS': ['G11 ARTS Male', 'G11 ARTS Female', 'G12 ARTS Male', 'G12 ARTS Female']
+        }
+
+        region_col = next((col for col in df.columns if col.lower() == 'region'), None)
+        if not region_col:
+            return {}
+
+        result = {}
+        for strand, cols in shs_strands.items():
+            valid_cols = [col for col in cols if col in df.columns]
+            if not valid_cols:
+                continue
+            grouped = df.groupby(region_col)[valid_cols].sum().sum(axis=1)
+            result[strand] = grouped
+
+        heatmap_df = pd.DataFrame(result).fillna(0).astype(int)
+        heatmap_df = heatmap_df.reset_index().rename(columns={region_col: 'Region'})
+        return heatmap_df.to_dict(orient='list')
+
+    except Exception as e:
+        print(f"Error generating strand-region heatmap: {e}")
+        return {}
+
