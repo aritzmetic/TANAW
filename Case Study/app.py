@@ -179,23 +179,6 @@ dash_app_works = create_dash_app(app)
 dash_app_report = create_dash_app_report(app)
 
 if __name__ == "__main__":
-    app.run(debug=True)
-# Triggering auto-reload at 2025-04-18 20:35:38
-# Triggering auto-reload at 2025-04-18 20:47:09
-# Triggering auto-reload at 2025-04-18 20:49:40
-# Triggering auto-reload at 2025-04-18 20:54:15
-# Triggering auto-reload at 2025-04-18 22:30:12
-# Triggering auto-reload at 2025-04-19 00:09:24
-# Triggering auto-reload at 2025-04-19 00:46:30
-# Triggering auto-reload at 2025-04-19 23:17:22
-# Triggering auto-reload at 2025-04-20 01:06:35
-# Triggering auto-reload at 2025-04-20 10:46:32
-# Triggering auto-reload at 2025-04-20 11:10:36
-# Triggering auto-reload at 2025-04-20 11:14:45
-# Triggering auto-reload at 2025-04-21 08:27:15
-# Triggering auto-reload at 2025-04-21 15:36:30
-# Triggering auto-reload at 2025-04-21 15:40:16
-# Triggering auto-reload at 2025-04-21 15:55:45
-# Triggering auto-reload at 2025-04-21 17:01:20
-# Triggering auto-reload at 2025-04-21 17:22:14
-# Triggering auto-reload at 2025-04-21 17:40:46
+    app.run(debug=True)# Triggering auto-reload at 2025-04-22 02:13:27
+# Triggering auto-reload at 2025-04-22 03:01:20
+# Triggering auto-reload at 2025-04-22 03:36:24
