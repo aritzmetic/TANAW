@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <title>{% block title %}TANAW: Nakaraang Panahon{% endblock %}</title> {# Allow title override #}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Candu&family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* DepEd Solid Color Palette */
+        :root {
+            --deped-blue: #00308F; /* Deep Blue */
+            --deped-yellow: #FFDA63; /* Golden Yellow */
+            --deped-light-blue: #ADD8E6; /* Light Blue */
+            --deped-white: #FFFFFF;
+            --deped-success: #28a745;
+            --deped-error: #dc3545;
+            --deped-gray: #D3D3D3;
+            --text-dark: #333;
+            --text-light: #777;
+            --box-shadow-sm: 0 4px 8px rgba(0, 0, 0, 0.08);
+            --box-shadow-md: 0 8px 16px rgba(0, 0, 0, 0.1);
+            --transition-default: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --border-radius-md: 12px;
+            --border-radius-sm: 6px;
+            --accent-color: #FFA000; /* Example accent color */
+            --red-color: #DC3545;
+            --black-color: #000000;
+            --secondary-blue: #4361EE;
+            --gradient-blue: linear-gradient(135deg, var(--deped-blue) 0%, var(--secondary-blue) 100%);
+            --gradient-yellow: linear-gradient(135deg, var(--deped-yellow) 0%, #FFEA88 100%);
+            --gradient-light-blue: linear-gradient(135deg, #cce5ff 0%, #99ccff 50%, #66b2ff 100%);
+            --deped-light-bg: #E0F2F7; /* Used for body background */
+        }
+
+        /* DepEd Fonts and Base Body Styles */
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, var(--deped-white) 0%, var(--deped-light-bg) 100%); /* Light gradient background */
+            color: var(--text-dark);
+            line-height: 1.7;
+            padding: 30px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            animation: fadeIn 0.6s ease-out;
+            position: relative; /* Needed for toast positioning */
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--deped-blue);
+            margin-bottom: 0.6em;
+            letter-spacing: -0.7px;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            font-size: 3rem;
+            animation: fadeInDown 0.9s ease-out;
+            margin-bottom: 0.1em;
+            color: var(--deped-white);
+        }
+
+        h2 {
+            font-size: 2.4rem;
+            color: var(--deped-blue);
+            margin-bottom: 1em;
+            text-align: center;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            color: var(--deped-blue);
+            margin-bottom: 0.8em;
+            border-bottom: 4px solid var(--deped-yellow);
+            padding-bottom: 0.5em;
+        }
+
+        h4 {
+            font-size: 1.3rem;
+            color: var(--secondary-blue);
+            margin-top: 0;
+            margin-bottom: 1em;
+        }
+
+        /* Solid Header Section with Gradient (No changes requested) */
+        header {
+            background: var(--gradient-blue);
+            color: var(--deped-blue);
+            padding: 20px;
+            border-radius: var(--border-radius-md);
+            margin-bottom: 35px;
+            box-shadow: var(--box-shadow-md);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            z-index: 100;
+            border-bottom: 4px solid var(--deped-yellow);
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background-color: rgba(255, 218, 99, 0.15);
+            border-radius: 50%;
+            transform: translate(-10%, -10%) rotate(-30deg);
+            z-index: -1;
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.8; transform: translate(-10%, -10%) rotate(-30deg) scale(1); }
+            100% { opacity: 1; transform: translate(-10%, -10%) rotate(-30deg) scale(1.05); }
+        }
+
+        header .logo-area {
+            display: flex;
+            align-items: center;
+        }
+
+        header .logo-area img {
+            height: 100px;
+            vertical-align: middle;
+            margin-right: 20px;
+            animation: fadeIn 1.1s ease-out, slideInLeft 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        header .logo-area h1 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.2;
+            animation: fadeIn 1.1s ease-out, slideInRight 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Navigation and Account Dropdown Container */
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Stylish Navigation Bar with Hover Effect */
+        nav {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-md);
+            padding: 0;
+            margin: 0;
+            animation: none;
+            transform: none;
+            opacity: 1;
+            margin-right: 15px;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 10px 15px;
+            margin: 0;
+            display: flex;
+            gap: 15px;
+        }
+
+        nav ul li a {
+            display: inline-flex;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: var(--deped-white);
+            background-color: transparent;
+            border: 2px solid var(--deped-yellow);
+            border-radius: var(--border-radius-sm);
+            font-size: 1rem;
+            font-weight: 700;
+            transition: var(--transition-default);
+            align-items: center;
+            white-space: nowrap;
+            box-shadow: var(--box-shadow-sm);
+        }
+
+        nav ul li a:hover {
+            background-color: var(--deped-yellow);
+            color: var(--deped-blue);
+            border-color: var(--accent-color);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.25);
+        }
+
+        nav ul li a:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(173, 216, 230, 0.7);
+        }
+
+        nav ul li a i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* Hamburger Menu */
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            gap: 6px;
+            z-index: 103;
+            transition: var(--transition-default);
+        }
+         .hamburger-menu.active .bar:nth-child(1) {
+             transform: translateY(9px) rotate(45deg);
+         }
+         .hamburger-menu.active .bar:nth-child(2) {
+             opacity: 0;
+         }
+         .hamburger-menu.active .bar:nth-child(3) {
+             transform: translateY(-9px) rotate(-45deg);
+         }
+
+
+        .hamburger-menu .bar {
+            width: 28px;
+            height: 4px;
+            background-color: var(--deped-white);
+            border-radius: 5px;
+            transition: var(--transition-default);
+        }
+
+        /* Mobile Nav Overlay and Mobile Nav */
+        .mobile-nav-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 101;
+            backdrop-filter: blur(5px);
+             transition: opacity 0.3s ease-in-out;
+             opacity: 0;
+        }
+        .mobile-nav-overlay.open {
+            display: block;
+             opacity: 1;
+        }
+
+
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--gradient-blue);
+            width: 350px;
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--box-shadow-md);
+            z-index: 102;
+            margin-top: 0;
+            opacity: 0;
+            animation: slideInDown 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .mobile-nav.open {
+            display: block;
+        }
+
+        .mobile-nav .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: var(--deped-yellow);
+            font-size: 1.6rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            transition: var(--transition-default);
+        }
+
+        .mobile-nav .close-btn:hover {
+            color: var(--accent-color);
+            transform: rotate(90deg);
+        }
+
+        .mobile-nav ul {
+            list-style: none;
+            padding: 30px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .mobile-nav ul li a {
+            display: block;
+            text-decoration: none;
+            color: var(--deped-yellow);
+            padding: 15px 25px;
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition-default);
+            text-align: center;
+            width: 100%;
+            font-size: 1.1rem;
+            border: 2px solid var(--deped-yellow);
+        }
+
+        .mobile-nav ul li a:hover {
+            background-color: rgba(255, 218, 99, 0.2);
+            color: var(--deped-blue);
+            border-color: var(--accent-color);
+             transform: translateX(5px); /* Subtle slide on hover */
+        }
+
+        /* Account Pop-up (Slightly enhanced) */
+        .account-popup {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background-color: var(--deped-white);
+            border: 1px solid var(--deped-gray);
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--box-shadow-md);
+            padding: 20px;
+            z-index: 101;
+            width: 180px;
+            text-align: center;
+            animation: fadeInUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+        .account-popup.open {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .account-popup h4 {
+            color: var(--text-dark);
+            font-size: 1.2rem;
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+
+        .account-popup button {
+            display: block;
+            width: 100%;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            background-color: var(--deped-light-blue);
+            color: var(--deped-blue);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition-default);
+            box-shadow: var(--box-shadow-sm);
+        }
+
+        .account-popup button:hover {
+            background-color: var(--secondary-blue);
+            color: var(--deped-white);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Solid Highlights Section */
+        #highlights {
+            background-color: var(--deped-yellow);
+            color: var(--deped-blue);
+            padding: 20px;
+            text-align: center;
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--box-shadow-sm);
+            margin-bottom: 25px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            animation: pulse 1.5s infinite alternate;
+            z-index: 1;
+        }
+
+        #highlights i {
+            margin-right: 15px;
+        }
+
+        /* Animations */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInDown {
+            from { transform: translateY(-15px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.03); }
+        }
+
+        /* Responsive Design */
+        footer {
+            background: var(--gradient-blue);
+            color: var(--deped-light-blue);
+            padding: 40px 20px;
+            border-radius: var(--border-radius-md);
+            margin-top: 40px;
+            box-shadow: var(--box-shadow-md);
+            animation: slideInUp 1s ease-out;
+             transition: all 0.3s ease-in-out; /* Add transition for hover */
+        }
+
+        @keyframes slideInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        footer:hover {
+             background: var(--gradient-blue); /* Change background on hover */
+             box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+             transform: translateY(-3px);
+        }
+
+        footer div {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        footer h4 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--deped-yellow);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+             transition: color 0.3s ease-in-out; /* Add transition for h4 color */
+        }
+         footer:hover h4 {
+             color: var(--deped-yellow); /* Change h4 color on footer hover */
+         }
+
+
+        footer p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: var(--deped-white);
+            opacity: 0.9;
+             transition: color 0.3s ease-in-out; /* Add transition for p color */
+        }
+         footer:hover p {
+             color: var(--deped-white); /* Change p color on footer hover */
+         }
+
+
+        footer hr {
+            border: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 25px auto;
+            width: 80%;
+             transition: border-color 0.3s ease-in-out; /* Add transition for hr */
+        }
+         footer:hover hr {
+             border-top-color: rgba(255, 255, 255, 0.2); /* Change hr color on footer hover */
+         }
+
+        footer a {
+            text-decoration: none;
+            color: var(--deped-light-blue);
+            transition: color 0.3s ease-in-out;
+            font-size: 1rem;
+            margin: 0 15px;
+        }
+
+        footer a:hover {
+            color: var(--deped-light-blue); /* Keep original hover color for links */
+        }
+         footer:hover a {
+             color: var(--deped-light-blue); /* Change link color on footer hover */
+         }
+         footer:hover a:hover {
+             color: var(--deped-light-blue); /* Different hover color when footer is also hovered */
+         }
+
+        footer p#copyright {
+            font-size: 0.9rem;
+            margin-top: 25px;
+            opacity: 0.7;
+             transition: color 0.3s ease-in-out; /* Add transition for copyright */
+        }
+         footer:hover p#copyright {
+             color: var(--text-light); /* Change copyright color on footer hover */
+         }
+
+
+        /* Responsive Design (Minor adjustments) */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            header {
+                padding: 15px;
+                margin-bottom: 25px;
+            }
+
+            header .logo-area img {
+                height: 80px; /* Slightly smaller logo on mobile */
+                margin-right: 15px;
+            }
+
+            header .logo-area h1 {
+                font-size: 1.2rem; /* Slightly smaller heading */
+            }
+
+            nav {
+                display: none;
+                margin-right: 0;
+            }
+
+            .header-right {
+                justify-content: flex-end;
+                width: auto;
+            }
+
+            .hamburger-menu {
+                display: flex;
+                width: 30px;
+                height: 30px;
+                gap: 5px;
+            }
+
+            .hamburger-menu .bar {
+                width: 24px;
+                height: 3px;
+            }
+
+            .account-popup {
+                top: 50px;
+                right: 15px;
+                width: 160px;
+                padding: 15px;
+            }
+
+            .account-popup h4 {
+                font-size: 1.1rem;
+                margin-bottom: 10px;
+            }
+
+            .account-popup button {
+                font-size: 0.9rem;
+                padding: 8px 12px;
+                margin-bottom: 8px;
+            }
+
+            #reportFrame {
+                height: 1200px; /* Adjust map height for smaller screens */
+            }
+
+            #geographic-view-section {
+                padding: 10px;
+            }
+
+            .geographic-view-header h3 {
+                font-size: 1.4rem;
+            }
+
+            .geographic-view-content {
+                padding: 15px;
+            }
+
+            footer {
+                padding: 30px 15px;
+            }
+
+            footer h4 {
+                font-size: 1.4rem;
+            }
+
+            footer p {
+                font-size: 1rem;
+            }
+
+            footer a {
+                font-size: 0.9rem;
+                margin: 0 10px;
+            }
+
+        }
+
+        /* More Subtle Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-15px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(15px); opacity: 0; }
+            to { opacity: 1; transform: translateX(0); opacity: 1; }
+        }
+            
+        .action-button.animated.pulse-hover:hover {
+            animation: pulse-btn 0.4s ease-in-out;
+        }
+
+        @keyframes pulse-btn {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        /* Ripple Effect */
+        .action-button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button .ripple {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple-effect 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-effect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+</style>
+</head>
+<body>
+    <header>
+        <div class="logo-area">
+            <img src="/static/logo (1).png" alt="DepEd Logo" style="height: 85px;">
+            <h1>TRACKING & ANALYTICS FOR NATIONWIDE ACADEMIC WATCH</h1>
+        </div>
+
+        <div class="header-right">
+            <nav>
+                <ul>
+                    <li><a href="/home"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="/report"><i class="fas fa-file-alt"></i> Reports</a></li>
+                    <li><a href="#" id="accountBtn"><i class="fas fa-user-circle"></i></a></li>
+                </ul>
+            </nav>
+            <div class="hamburger-menu" id="hamburger">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </div>
+        <div class="mobile-nav-overlay" id="navOverlay"></div>
+        <div class="mobile-nav" id="mobileNav">
+            <button class="close-btn" id="closeNav"><i class="fas fa-times"></i></button>
+            <ul>
+                <li><a href="/upload"><i class="fas fa-cogs"></i> Admin</a></li>
+                <li><a href="/help"><i class="fas fa-question-circle"></i> Help</a></li>
+                <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Main Content Section -->
+    <div class="main-content">
+        <!-- Here we will include content from the 'data_management.html' -->
+        {% block content %}
+        {% endblock %}
+    </div>
+    
+    <div class="account-popup" id="accountPopup">
+        <h4>Account</h4>
+        <button onclick="window.location.href='/upload'"><i class="fas fa-cogs"></i> Admin</button>
+        <button onclick="window.location.href='/help'"><i class="fas fa-question-circle"></i> Help</button>
+        <button onclick="window.location.href='/logout'"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger');
+            const mobileNav = document.getElementById('mobileNav');
+            const navOverlay = document.getElementById('navOverlay');
+            const closeNav = document.getElementById('closeNav');
+            const accountBtn = document.getElementById('accountBtn');
+            const accountPopup = document.getElementById('accountPopup');
+
+            hamburger.addEventListener('click', function() {
+                mobileNav.classList.add('open');
+                navOverlay.style.display = 'block';
+            });
+
+            closeNav.addEventListener('click', function() {
+                mobileNav.classList.remove('open');
+                navOverlay.style.display = 'none';
+            });
+
+            navOverlay.addEventListener('click', function() {
+                mobileNav.classList.remove('open');
+                navOverlay.style.display = 'none';
+            });
+
+            accountBtn.addEventListener('click', function(event) {
+                event.preventDefault();
+                accountPopup.style.display = (accountPopup.style.display === 'block') ? 'none' : 'block';
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!accountBtn.contains(event.target) && !accountPopup.contains(event.target)) {
+                    accountPopup.style.display = 'none';
+                }
+            });
+        });
+    </script>
+
+<footer>
+    <div>
+    <h4><i class="fas fa-university" style="margin-right: 10px;"></i> Department of Education</h4>
+    <p>Empowering the Nation Through Quality Education.</p>
+    <hr/>
+    <div>
+    <a href="/home">Home</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/report">Reports</a>
+    <a href="/help">Help</a>
+    <a href="/upload">Admin</a>
+    </div>
+    <p id="copyright">© 2025 DepEd Enrollment Dashboard. All rights reserved.</p>
+    </div>
+</footer>
+    <script>
+        function updateCopyrightYear() {
+            const year = new Date().getFullYear();
+            document.getElementById('copyright').textContent = `© ${year} DepEd Enrollment Dashboard. All rights reserved.`;
+        }
+        updateCopyrightYear();
+        const footer = document.querySelector('footer');
+        if (footer) {
+            footer.addEventListener('mouseover', () => {
+                footer.style.backgroundColor = ('var(--deped-yellow)');
+                footer.style.color = ('var(--deped-blue)');
+                footer.style.boxShadow = '0 8px 12px rgba(0, 0, 0, 0.3)';
+                footer.style.transform = 'translateY(-3px)';
+                footer.style.transition = 'all 0.3s ease-in-out';
+            });
+            footer.addEventListener('mouseout', () => {
+                footer.style.backgroundColor = ('var(--gradient-blue)');
+                footer.style.color = ('var(--deped-light-blue)');
+                footer.style.boxShadow = 'var(--box-shadow-md)';
+                footer.style.transform = 'translateY(0)';
+            });
+        }
+        
+    </script>
+</body>
+</html>
