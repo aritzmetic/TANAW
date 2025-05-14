@@ -2,480 +2,624 @@
 
 {% block header %}{% endblock %}
 {% block footer %}{% endblock %}
-{% block title %}Data Management{% endblock %}
+{% block title %}School Year Data Comparison{% endblock %}
+
 {% block content %}
-
-
-<title>School Year Comparison</title>
 <style>
-    /* Basic styling for the comparison page */
-    body {
-        font-family: sans-serif; /* Use your preferred font */
-        line-height: 1.6;
-        margin: 0;
-        padding: 0; /* Removed default body padding */
-        background-color: #f4f4f4; /* Light background */
-        color: #333; /* Default text color */
-        display: flex; /* Use flexbox for layout */
-        flex-direction: column; /* Stack elements vertically */
-        min-height: 100vh; /* Ensure body takes at least full viewport height */
+    :root {
+        --deped-blue: #00308F;
+        --deped-yellow: #FFDA63;
+        --deped-green: #27ae60; 
+        --deped-red: #c0392b;   
+        --deped-grey: #7f8c8d;  
+        --year1-color: var(--deped-blue);
+        --year2-alt-color: #FFA000; 
+        --chart-bg: #ffffff;
+        --chart-border: #e0e0e0;
+        --chart-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --chart-title-color: #333333;
+        --axis-label-color: #555555;
+        --tick-color: #777777;
     }
-
-    .container {
-        max-width: 1200px; /* Max width for content */
-        margin: 20px auto; /* Center the container with top/bottom margin */
-        background: #fff; /* White background for the content area */
-        padding: 20px;
-        border-radius: 8px; /* Rounded corners */
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-        flex-grow: 1; /* Allow container to grow and fill space */
-    }
-
-    h1, h2, h3 {
-        color: var(--deped-blue, #00308f); /* Use your theme color for headings */
-        margin-bottom: 15px;
-    }
-
-    /* Styles for the control area (dropdowns and button) */
-    .comparison-controls {
-        display: flex; /* Arrange items in a row */
-        flex-wrap: wrap; /* Allow items to wrap on smaller screens */
-        gap: 20px; /* Spacing between items */
-        align-items: center; /* Vertically align items */
-        margin-bottom: 30px; /* Space below the controls */
-        padding: 15px;
-        background-color: #f9f9f9; /* Slightly different background for controls */
-        border-radius: 4px;
-        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
-    }
-
-    .comparison-controls form {
-         display: flex; /* Make form a flex container */
-         flex-wrap: wrap; /* Allow form items to wrap */
-         gap: 20px; /* Space between form elements */
-         align-items: center; /* Vertically align form elements */
-         width: 100%; /* Make form take full width of its container */
-    }
-
-
-    .year-selector {
-        display: flex; /* Arrange label and dropdown in a row */
-        align-items: center; /* Vertically align label and dropdown */
-        /* Allow this item to grow and shrink */
-        flex-grow: 1;
-        flex-shrink: 1;
-        min-width: 200px; /* Minimum width before wrapping */
-    }
-
-    .selector-label {
-         font-weight: bold;
-         color: var(--deped-blue, #00308f); /* Use your theme colors */
-         margin-right: 10px;
-         font-size: 1rem;
-         white-space: nowrap; /* Prevent label from wrapping */
-    }
-
-    /* Reusing or adapting the dropdown styles from your dashboard */
-    .comparison-dropdown {
-        flex-grow: 1; /* Allow dropdown to fill available space */
-        padding: 8px 12px;
-        border: 1px solid var(--deped-gray, #cccccc);
-        border-radius: var(--border-radius-sm, 4px);
-        font-size: 1rem;
-        color: var(--text-dark, #333333);
-        background-color: var(--deped-white, #ffffff);
-        appearance: none; /* Remove default arrow */
-        -webkit-appearance: none;
-        background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>');
-        background-repeat: no-repeat;
-        background-position: right 10px center;
-        background-size: 12px;
-        padding-right: 30px;
-        cursor: pointer;
-        transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-
-    .comparison-dropdown:hover {
-         border-color: var(--deped-blue, #00308f);
-    }
-
-    .comparison-dropdown:focus {
-        outline: none;
-        border-color: var(--deped-blue, #00308f);
-        box-shadow: 0 0 5px rgba(0, 48, 143, 0.3);
-    }
-
-     .comparison-dropdown option[disabled] {
-         color: var(--deped-gray, #cccccc);
-    }
-
-     /* Style for the selected option in the closed dropdown */
-    .comparison-dropdown:not(:valid) {
-        color: var(--deped-gray, #cccccc); /* If the default disabled option is selected */
-    }
-
-    /* Style for actual selected options */
-    .comparison-dropdown option:checked {
-         color: var(--text-dark, #333333); /* Ensure selected option has dark text */
-    }
-
-
-    .compare-button {
-        padding: 10px 20px;
-        background-color: var(--deped-blue, #00308f); /* Your theme color */
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: background-color 0.2s ease;
-        /* Optional: Prevent button from shrinking too much */
-        flex-shrink: 0;
-    }
-
-    .compare-button:hover {
-        background-color: #002060; /* Darker shade on hover */
-    }
-
-     .compare-button:active {
-         background-color: #001030; /* Even darker when clicked */
-     }
-
-
-    /* Styles for the visualization area */
-    .comparison-visualizations {
-        margin-top: 20px;
-        border-top: 1px solid #eee; /* Separator line */
-        padding-top: 20px;
-    }
-
-    /* Styles for individual visualization containers */
-    .visualization-container {
-        background-color: #ffffff; /* White background for visualization box */
-        border: 1px solid #ddd; /* Light border */
-        border-radius: 4px;
-        padding: 20px;
-        margin-bottom: 20px; /* Space between visualizations */
-        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05); /* Subtle shadow */
-        /* --- Fixed Size --- */
-        height: 400px; /* Fixed height for the container */
-        width: 100%;   /* Let it take the full width of its parent */
-        /* --- End Fixed Size --- */
-        position: relative; /* Needed for chart responsiveness */
-    }
-
-    .visualization-placeholder {
-        background-color: #e9e9e9; /* Grey background for placeholder */
-        padding: 30px;
-        text-align: center;
-        border-radius: 4px;
-        margin-bottom: 20px;
-        color: #666;
-        font-style: italic;
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 600px) {
-        .comparison-controls form {
-             flex-direction: column; /* Stack form items vertically on small screens */
-             align-items: stretch; /* Stretch items to fill width */
-        }
-
-        .year-selector {
-             flex-direction: column; /* Stack label and dropdown vertically */
-             align-items: flex-start; /* Align items to the start */
-             min-width: auto; /* Remove min-width constraint */
-             width: 100%; /* Take full width */
-        }
-
-        .selector-label {
-             margin-right: 0;
-             margin-bottom: 5px; /* Space between label and dropdown */
-        }
-
-        .comparison-dropdown {
-             width: 100%; /* Make dropdown take full width */
-        }
-
-        .compare-button {
-             width: 100%; /* Make button take full width */
-        }
-    }
-
- 
-        /* Styles for Back Button Container (No change needed from previous version) */
-        .back-button-container {
-            margin-top: 30px;    /* Space above the button */
-            padding-top: 20px;   /* Padding above the button inside the container */
-            border-top: 1px solid var(--deped-gray, #D3D3D3); /* Use theme gray for separator */
-            text-align: center; /* Center the button */
-        }
-
-        /* Styles for the Back Button (Default State - Solid Blue) */
-        .back-button {
-            display: inline-block; /* Allow padding and margins */
-            padding: 10px 25px; /* Adjust padding as needed */
-            background-color: var(--deped-blue, #00308F); /* Default: Blue background */
-            color: var(--deped-white, #FFFFFF); /* Default: White text */
-            border: 1px solid var(--deped-blue, #00308F); /* Default: Blue border (matches background) */
-            border-radius: var(--border-radius-sm, 5px); /* Use theme radius */
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            text-decoration: none; /* Remove underline from link */
-            transition: var(--transition-default, all 0.3s ease-in-out); /* Use theme transition */
-            box-shadow: none; /* No shadow in default state */
-        }
-
-        /* Styles for Hover & Focus (White Background) */
-        .back-button:hover,
-        .back-button:focus {
-            background-color: var(--deped-white, #FFFFFF); /* Hover: White background */
-            color: var(--deped-blue, #00308F); /* Hover: Blue text */
-            border: 1px solid var(--deped-blue, #00308F); /* Hover: Blue border (now visible) */
-            box-shadow: var(--box-shadow-sm, 0 2px 5px rgba(0, 0, 0, 0.08)); /* Hover: Add shadow */
-            outline: none; /* Remove default focus outline */
-        }
-
-        /* Optional: Style for when the button is actively being clicked (based on hover state) */
-        .back-button:active {
-            background-color: var(--deped-white, #FFFFFF); /* Keep white background */
-            /* Slightly darken the text/border for feedback */
-            color: #002060; /* Example: Darker variant of --deped-blue */
-            border-color: #002060; /* Example: Darker variant of --deped-blue */
-            box-shadow: none; /* Remove shadow during click */
-        }
-
-    /* Basic Footer Styling */
-    footer {
-        background-color: #333; /* Dark background for footer */
-        color: #fff; /* Light text */
-        text-align: center;
-        padding: 15px 0;
-        margin-top: 20px; /* Space above the footer */
-        flex-shrink: 0; /* Prevent footer from shrinking */
-    }
-
+    .comparison-container { max-width: 1400px; margin: 20px auto; background: #f4f7f9; padding: 20px; border-radius: 12px; }
+    .comparison-header h1 { color: var(--deped-blue); text-align: center; margin-bottom: 30px; font-size: 2.2rem; border-bottom: 3px solid var(--deped-yellow); padding-bottom: 15px; }
+    .comparison-controls { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; margin-bottom: 30px; padding: 25px; background-color: var(--chart-bg); border: 1px solid var(--chart-border); border-radius: 8px; box-shadow: var(--chart-shadow); }
+    .comparison-controls form { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; width: 100%; }
+    .year-selector { flex-grow: 1; min-width: 220px; }
+    .selector-label { font-weight: 600; color: var(--deped-blue); margin-bottom: 8px; font-size: 0.9rem; }
+    .comparison-dropdown { width: 100%; padding: 10px 15px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; background-color: #fff; transition: border-color 0.3s; }
+    .comparison-dropdown:hover { border-color: var(--deped-yellow); }
+    .comparison-dropdown:focus { outline: none; border-color: var(--deped-blue); box-shadow: 0 0 0 2px rgba(0, 48, 143, 0.2); }
+    .compare-button { padding: 12px 30px; background: linear-gradient(135deg, var(--deped-red, #e74c3c), var(--deped-blue, #306998)); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    .compare-button:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); filter: brightness(1.1); }
+    .compare-button:disabled { background: #cccccc !important; cursor: not-allowed !important; filter: grayscale(80%) !important; transform: none !important; box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; } /* Increased minmax for KPIs */
+    .kpi-card-compare { background-color: var(--chart-bg); padding: 20px; border-radius: 8px; box-shadow: var(--chart-shadow); text-align: center; border-left: 5px solid var(--deped-blue); transition: transform 0.2s ease-out, box-shadow 0.2s ease-out; display: flex; flex-direction: column; justify-content: space-between; min-height: 140px; }
+    .kpi-card-compare:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.12); }
+    .kpi-card-compare .metric-name { font-size: 0.9rem; color: var(--axis-label-color); margin-bottom: 10px; font-weight: 600; flex-shrink: 0; }
+    .kpi-card-compare .metric-values { font-size: 1rem; color: var(--chart-title-color); margin-bottom: 8px; word-break: break-word; flex-grow: 1; }
+    .kpi-card-compare .metric-values .year-label { font-weight: bold; }
+    .kpi-card-compare .metric-change { font-size: 0.95rem; font-weight: bold; flex-shrink: 0; }
+    .kpi-card-compare .metric-change.positive { color: var(--deped-green); }
+    .kpi-card-compare .metric-change.negative { color: var(--deped-red); }
+    .kpi-card-compare .metric-change.neutral, .kpi-card-compare .metric-change.na { color: var(--deped-grey); }
+    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 25px; }
+    @media (max-width: 1200px) { .charts-grid { grid-template-columns: 1fr; } }
+    .chart-container-compare { background-color: var(--chart-bg); padding: 20px; border-radius: 8px; box-shadow: var(--chart-shadow); min-height: 420px; display: flex; flex-direction: column; }
+    .chart-container-compare.full-width { grid-column: 1 / -1; }
+    .chart-container-compare h3 { text-align: center; color: var(--chart-title-color); font-size: 1.1rem; margin-top: 0; margin-bottom: 15px; font-weight: 600; }
+    .plotly-chart-div { flex-grow: 1; min-height: 350px; }
+    .regional-table-container { margin-top: 20px; overflow-x: auto; } 
+    .regional-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; } 
+    .regional-table th, .regional-table td { border: 1px solid var(--chart-border); padding: 8px 10px; text-align: left; white-space: nowrap; }
+    .regional-table th { background-color: #e9edf1; color: var(--deped-blue); font-weight: 600; } 
+    .regional-table tr:nth-child(even) { background-color: #f8f9fa; } 
+    .regional-table td.change-positive { color: var(--deped-green); font-weight: bold; }
+    .regional-table td.change-negative { color: var(--deped-red); font-weight: bold; }
+    .regional-table td.status-new { background-color: #e6ffed; }
+    .regional-table td.status-ceased { background-color: #ffebee; }
+    .regional-table td.change-na {color: var(--deped-grey);}
+    #loading-indicator-compare { display: none; text-align: center; padding: 20px; font-size: 1.1rem; color: var(--deped-blue); }
+    .placeholder-message { text-align: center; padding: 30px; color: #777; font-style: italic; background-color: #f0f0f0; border-radius: 8px; margin-top: 10px;}
+    .chart-placeholder { display: flex; align-items: center; justify-content: center; min-height: 300px; color: #999; font-style: italic; border: 1px dashed #ddd; border-radius: 6px; padding: 20px; text-align: center; background-color: #f9f9f9; flex-grow: 1; }
+    .back-button-container { margin-top: 30px; text-align: center; }
+    .back-button { padding: 12px 25px; background: var(--deped-blue); color: white; border: none; border-radius: 8px; text-decoration: none; font-weight: bold; transition: background-color 0.3s, transform 0.2s; }
+    .back-button:hover { background: var(--deped-yellow); color: var(--deped-blue); transform: translateY(-2px); }
 </style>
-</head>
-<body>
 
-<div class="container">
-    <h1>School Year Comparison</h1>
+<div class="comparison-container">
+    <div class="comparison-header">
+        <h1>School Year Data Comparison</h1>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div style="padding: 10px; margin-bottom: 15px; border-radius: 5px; color: #fff; background-color: {{ '#C0392B' if category == 'danger' else '#27AE60' if category == 'success' else '#2980B9' if category == 'info' else '#F39C12' if category == 'warning' else '#7F8C8D' }};">
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
     <div class="comparison-controls">
-        <form method="POST" action="{{ url_for('compare') }}">
+        <form method="POST" action="{{ url_for('compare') }}" id="comparison-form">
             <div class="year-selector">
-                <label for="school_year_1" class="selector-label">Compare Year 1:</label>
+                <label for="school_year_1" class="selector-label">Select First School Year (Older):</label>
                 <select name="school_year_1" id="school_year_1" class="comparison-dropdown" required>
-                    <option value="" disabled {% if not selected_year_1 %}selected{% endif %}>Select Year 1</option>
-                     {% if not available_years %}
-                         <option value="" disabled>No data available</option>
-                     {% endif %}
-                     {% for year in available_years %}
-                         <option value="{{ year }}" {% if year == selected_year_1 %}selected{% endif %}>
-                             {{ year }}
-                         </option>
-                     {% endfor %}
+                    <option value="" disabled {% if not selected_year_1 %}selected{% endif %}>Choose Year 1</option>
+                    {% for year in available_years %}<option value="{{ year }}" {% if year == selected_year_1 %}selected{% endif %}>{{ year }}</option>{% endfor %}
                 </select>
             </div>
-
             <div class="year-selector">
-                <label for="school_year_2" class="selector-label">Compare Year 2:</label>
+                <label for="school_year_2" class="selector-label">Select Second School Year (Newer):</label>
                 <select name="school_year_2" id="school_year_2" class="comparison-dropdown" required>
-                    <option value="" disabled {% if not selected_year_2 %}selected{% endif %}>Select Year 2</option>
-                     {% if not available_years %}
-                         <option value="" disabled>No data available</option>
-                     {% endif %}
-                     {% for year in available_years %}
-                         <option value="{{ year }}" {% if year == selected_year_2 %}selected{% endif %}>
-                             {{ year }}
-                         </option>
-                     {% endfor %}
+                    <option value="" disabled {% if not selected_year_2 %}selected{% endif %}>Choose Year 2</option>
+                    {# Options will be populated by JavaScript based on Year 1 selection #}
+                    {% if selected_year_1 and selected_year_2 %} 
+                        {% for year in available_years %}
+                            {% set year_numeric = year.split('-')[0] | int %}
+                            {% set selected_year_1_numeric = selected_year_1.split('-')[0] | int %}
+                            {% if year_numeric >= selected_year_1_numeric %}
+                                <option value="{{ year }}" {% if year == selected_year_2 %}selected{% endif %}>{{ year }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
                 </select>
             </div>
-
-            <button type="submit" class="compare-button">Compare</button>
+            <button type="submit" class="compare-button" id="compare-button-submit">Compare Data</button>
         </form>
+        <p class="error-message" id="validation-message-compare" style="width:100%; text-align:center; margin-top:10px; color: var(--deped-red);"></p>
     </div>
 
-    <div class="comparison-visualizations">
-        <h2>Comparison Results</h2>
+    <div id="loading-indicator-compare"><p>Loading comparison data, please wait...</p></div>
 
-        {% if comparison_data %}
-
-            <div class="visualization-container">
-                <h3>Total Enrollment Comparison ({{ comparison_data.year1_label }} vs {{ comparison_data.year2_label }})</h3>
-                 <canvas id="totalEnrollmentChart"></canvas>
+    <div class="comparison-results-section">
+        {% if not comparison_data or comparison_data.error %}
+            <p class="placeholder-message" id="initial-placeholder-msg">
+                {% if comparison_data and comparison_data.error %}
+                    Error: {{ comparison_data.error }}
+                {% elif available_years and available_years|length < 2 %}
+                    At least two school year datasets are needed for comparison. Please upload more data via the Admin page.
+                {% else %}
+                    Select two different school years and click "Compare Data" to view the analysis.
+                {% endif %}
+            </p>
+        {% else %}
+            <h2>Key Performance Indicators (KPIs) Comparison</h2>
+            <div class="kpi-grid" id="kpi-cards-container">
             </div>
 
-             <div class="visualization-container">
-                <h3>Enrollment by Year Level Comparison ({{ comparison_data.year1_label }} vs {{ comparison_data.year2_label }})</h3>
-                 <canvas id="enrollmentByYearLevelChart"></canvas>
-             </div>
+            <div class="charts-grid" id="charts-grid-main">
+                <div class="chart-container-compare" id="enrollment-by-sector-chart-container">
+                    <h3>Enrollment by Sector</h3>
+                    <div id="enrollment-by-sector-chart" class="plotly-chart-div"></div>
+                </div>
+                <div class="chart-container-compare" id="enrollment-by-level-chart-container">
+                    <h3>Enrollment by Education Level</h3>
+                    <div id="enrollment-by-level-chart" class="plotly-chart-div"></div>
+                </div>
+                <div class="chart-container-compare" id="gender-distribution-chart-container">
+                    <h3>Gender Distribution (Total Enrollment)</h3>
+                    <div id="gender-distribution-chart" class="plotly-chart-div"></div>
+                </div>
+                 <div class="chart-container-compare" id="gpi-by-level-chart-container">
+                    <h3>Gender Parity Index (GPI) by Education Level</h3>
+                    <div id="gpi-by-level-chart" class="plotly-chart-div"></div>
+                </div>
+                 <div class="chart-container-compare" id="shs-strand-enrollment-chart-container">
+                    <h3>SHS Strand Enrollment</h3>
+                    <div id="shs-strand-enrollment-chart" class="plotly-chart-div"></div>
+                </div>
+                <div class="chart-container-compare" id="schools-offering-shs-strands-change-chart-container">
+                    <h3>Change in Schools Offering SHS Strands</h3>
+                    <div id="schools-offering-shs-strands-change-chart" class="plotly-chart-div"></div>
+                </div>
 
-             <div class="visualization-container">
-                <h3>Enrollment by Region Comparison ({{ comparison_data.year1_label }} vs {{ comparison_data.year2_label }})</h3>
-                 <canvas id="enrollmentByRegionChart"></canvas>
-             </div>
+                <div class="chart-container-compare full-width" id="regional-enrollment-change-chart-container"> 
+                    <h3>Regional Enrollment Change (Absolute)</h3>
+                    <div id="regional-enrollment-change-chart" class="plotly-chart-div"></div>
+                </div>
+            </div>
 
-
-        {% else %}
-            <p>Select two school years above and click "Compare" to see visualizations.</p>
-        {% endif %}
-
+            <div class="chart-container-compare full-width" id="regional-data-table-container" style="margin-top: 25px;">
+              <h3>Detailed Regional Comparison</h3>
+              <div class="regional-table-container" id="regional-data-table">
+              </div>
+            </div>
+        {% endif %} 
     </div>
-</div> <div class="back-button-container">
-    {# IMPORTANT: Replace 'report_page_endpoint' with the actual name of your Flask route for the report page #}
-    <a href="{{ url_for('report') }}" class="back-button">
-        &larr; Back to Reports
-    </a>
-     {# Using &larr; for a left arrow visually #}
-</div>
+
+    <div class="back-button-container">
+        <a href="{{ url_for('dashboard') }}" class="back-button">&larr; Back to Dashboard</a>
+    </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
 <script>
-    // Get the comparison data passed from Flask
-    // Use | tojson | default('null') to safely handle cases where comparison_data is None
-    var comparisonData = {{ comparison_data | default([]) | tojson }};
+    document.addEventListener('DOMContentLoaded', function() {
+        const rawComparisonData = {{ comparison_data | default('null') | tojson | safe }};
+        console.log("DEBUG: Initial rawComparisonData from Jinja:", rawComparisonData);
+        
+        let comparisonData = null;
+        try {
+            if (typeof rawComparisonData === 'string' && rawComparisonData.toLowerCase() === 'null') {
+                comparisonData = null;
+            } else if (typeof rawComparisonData === 'object' && rawComparisonData !== null) {
+                comparisonData = rawComparisonData;
+            } else { 
+                comparisonData = JSON.parse(rawComparisonData);
+            }
+        } catch (e) {
+            console.error("DEBUG: Error parsing rawComparisonData:", e, "Raw data was:", rawComparisonData);
+            comparisonData = { error: "Failed to parse comparison data from server." }; 
+        }
+        console.log("DEBUG: Parsed comparisonData for JS:", comparisonData);
 
-    
-    // Function to render a bar chart
-    function renderBarChart(canvasId, chartTitle, chartData) {
-        var ctx = document.getElementById(canvasId).getContext('2d');
-        new Chart(ctx, {
-            type: 'bar', // Use 'bar' for bar charts
-            data: chartData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false, // Allow chart to fill container height
-                plugins: {
-                    title: {
-                        display: false, // Title is already in H3
-                        text: chartTitle
-                    },
-                    legend: {
-                        display: true // Show legend for multiple datasets
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Number of Students'
+        const year1LabelGlobal = (comparisonData && comparisonData.year1_label) ? comparisonData.year1_label : 'Year 1';
+        const year2LabelGlobal = (comparisonData && comparisonData.year2_label) ? comparisonData.year2_label : 'Year 2';
+
+        const colorYear1 = getComputedStyle(document.documentElement).getPropertyValue('--year1-color').trim() || '#00308F';
+        const colorYear2 = getComputedStyle(document.documentElement).getPropertyValue('--year2-alt-color').trim() || '#FFA000';
+        const colorPositive = getComputedStyle(document.documentElement).getPropertyValue('--deped-green').trim() || '#27ae60';
+        const colorNegative = getComputedStyle(document.documentElement).getPropertyValue('--deped-red').trim() || '#c0392b';
+        const colorNeutral = getComputedStyle(document.documentElement).getPropertyValue('--deped-grey').trim() || '#7f8c8d';
+        
+        const plotlyLayoutConfigBase = { 
+            autosize: true,
+            margin: { l: 70, r: 40, b: 100, t: 60, pad: 5 },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            legend: {
+                orientation: 'h', yanchor: 'bottom', y: 1.02, xanchor: 'right', x: 1,
+                bgcolor: 'rgba(255,255,255,0.7)', bordercolor: '#ccc', borderwidth: 1,
+                font: {size: 10}
+            },
+            font: { family: 'Segoe UI, Tahoma, sans-serif', size: 11, color: '#555555' },
+            xaxis: { 
+                tickfont: { color: '#777777', size: 10 }, 
+                gridcolor: '#eaeaea', zerolinecolor: '#d0d0d0', linecolor: '#d0d0d0', 
+                automargin: true 
+            },
+            yaxis: { 
+                tickfont: { color: '#777777', size: 10 }, 
+                gridcolor: '#eaeaea', zerolinecolor: '#d0d0d0', linecolor: '#d0d0d0', 
+                fixedrange: false, automargin: true, separatethousands: true,
+                titlefont: {size: 12}
+            },
+            hoverlabel: {
+                bgcolor: "white",
+                font: {size: 12, family: "Arial, sans-serif"}
+            }
+        };
+        
+        function formatNumber(num, decimals = 0, notApplicableString = "N/A") {
+            if (num === null || num === undefined || (typeof num === 'number' && isNaN(num))) return notApplicableString;
+            if (typeof num !== 'number') return String(num); 
+            return num.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+        }
+
+        const form = document.getElementById('comparison-form');
+        const year1Select = document.getElementById('school_year_1');
+        const year2Select = document.getElementById('school_year_2');
+        const submitButton = document.getElementById('compare-button-submit');
+        const validationMsgEl = document.getElementById('validation-message-compare');
+        const loadingIndicator = document.getElementById('loading-indicator-compare');
+        const initialPlaceholderMsgEl = document.getElementById('initial-placeholder-msg');
+        const kpiContainer = document.getElementById('kpi-cards-container');
+        const chartsGridMain = document.getElementById('charts-grid-main');
+        const regionalTableFullContainer = document.getElementById('regional-data-table-container');
+        
+        const allAvailableYears = {{ available_years | default([]) | tojson | safe }}; 
+
+        function populateYear2Dropdown() {
+            const selectedYear1 = year1Select.value;
+            const currentYear2Value = year2Select.value; 
+            year2Select.innerHTML = ''; 
+
+            const placeholderOption = document.createElement('option');
+            placeholderOption.value = "";
+            placeholderOption.textContent = "Choose Year 2";
+            placeholderOption.disabled = true;
+            year2Select.appendChild(placeholderOption);
+            
+            let foundCurrentYear2 = false;
+            let hasSelectableOption = false;
+
+            if (selectedYear1 && allAvailableYears.length > 0) {
+                const year1Numeric = parseInt(selectedYear1.substring(0,4));
+                allAvailableYears.forEach(year => {
+                    const yearNumeric = parseInt(year.substring(0,4));
+                    if (yearNumeric >= year1Numeric) { 
+                        const option = document.createElement('option');
+                        option.value = year;
+                        option.textContent = year;
+                        if (year === currentYear2Value) {
+                            option.selected = true;
+                            foundCurrentYear2 = true;
                         }
-                    },
-                    x: {
-                         title: {
-                             display: chartData.labels && chartData.labels.length > 10 ? true : false, // Add axis title if many labels
-                             text: 'Category'
-                         },
-                         ticks: {
-                              autoSkip: (chartData.labels && chartData.labels.length > 20), // Auto-skip ticks if too many labels
-                              maxRotation: 90, // Rotate labels if needed
-                              minRotation: 0
-                         }
+                        year2Select.appendChild(option);
+                        hasSelectableOption = true;
                     }
+                });
+            } else if (allAvailableYears.length > 0) { 
+                 allAvailableYears.forEach(year => {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    if (year === currentYear2Value) { 
+                        option.selected = true;
+                        foundCurrentYear2 = true;
+                    }
+                    year2Select.appendChild(option);
+                    hasSelectableOption = true;
+                 });
+            }
+            
+            if (!foundCurrentYear2 || !hasSelectableOption) { 
+                year2Select.value = ""; 
+            }
+            validateSelection(); 
+        }
+
+
+        function validateSelection() {
+            const year1 = year1Select.value;
+            const year2 = year2Select.value;
+            let isValid = true;
+            let message = "";
+
+            if (!year1 || !year2) {
+                message = 'Please select both school years.';
+                isValid = false;
+            } else {
+                const year1Numeric = parseInt(year1.substring(0,4));
+                const year2Numeric = parseInt(year2.substring(0,4));
+                if (year2Numeric < year1Numeric) {
+                    message = 'Second school year must be the same as or newer than the first.';
+                    isValid = false;
+                } else if (year1 === year2) {
+                     message = 'Please select two different school years for comparison.';
+                     isValid = false;
                 }
             }
-        });
-    }
+            
+            validationMsgEl.textContent = message;
+            if(submitButton) submitButton.disabled = !isValid;
+            return isValid;
+        }
 
-     // Function to render a grouped bar chart (suitable for year level or region comparison)
-    function renderGroupedBarChart(canvasId, chartTitle, chartData) {
-        var ctx = document.getElementById(canvasId).getContext('2d');
-        new Chart(ctx, {
-            type: 'bar', // Still 'bar', but options configure grouping
-            data: chartData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    title: {
-                        display: false,
-                        text: chartTitle
-                    },
-                     legend: {
-                        display: true
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                         title: {
-                             display: true,
-                             text: 'Number of Students'
-                         }
-                    },
-                    x: {
-                         title: {
-                             display: chartData.labels && chartData.labels.length > 10 ? true : false,
-                             text: 'Category'
-                         },
-                         ticks: {
-                              autoSkip: (chartData.labels && chartData.labels.length > 20),
-                              maxRotation: 90,
-                              minRotation: 0
-                         }
+        if(year1Select) {
+            year1Select.addEventListener('change', populateYear2Dropdown); // No need for arrow func if it's just calling
+        }
+        if(year2Select) {
+            year2Select.addEventListener('change', validateSelection);
+        }
+        
+        if(form){
+            form.addEventListener('submit', function(e) {
+                if (!validateSelection()) {
+                    e.preventDefault();
+                } else {
+                    if(loadingIndicator) loadingIndicator.style.display = 'block';
+                    if(initialPlaceholderMsgEl) initialPlaceholderMsgEl.style.display = 'none';
+                    if(kpiContainer) kpiContainer.style.display = 'none'; 
+                    if(chartsGridMain) chartsGridMain.style.display = 'none'; 
+                    if(regionalTableFullContainer) regionalTableFullContainer.style.display = 'none'; 
+                }
+            });
+        }
+        
+        populateYear2Dropdown(); 
+        validateSelection();    
+
+        function renderPlotlyChart(divId, data, layoutUpdates, configUpdates = {responsive: true, displaylogo: false}) {
+            const chartDiv = document.getElementById(divId);
+            if (!chartDiv) {
+                console.error(`DEBUG: Chart div not found: ${divId}`);
+                return;
+            }
+            chartDiv.innerHTML = ''; 
+            try {
+                const finalLayout = { ...plotlyLayoutConfigBase };
+                if (layoutUpdates) { 
+                    for (const key in layoutUpdates) {
+                        if (layoutUpdates.hasOwnProperty(key)) {
+                            if (typeof layoutUpdates[key] === 'object' && plotlyLayoutConfigBase[key] && typeof plotlyLayoutConfigBase[key] === 'object' && !Array.isArray(layoutUpdates[key])) { 
+                                finalLayout[key] = { ...plotlyLayoutConfigBase[key], ...layoutUpdates[key] };
+                            } else {
+                                finalLayout[key] = layoutUpdates[key];
+                            }
+                        }
                     }
                 }
+                Plotly.newPlot(divId, data, finalLayout, configUpdates);
+                console.log(`DEBUG: Chart ${divId} rendered successfully.`);
+            } catch (e) {
+                console.error(`DEBUG: Error rendering chart ${divId}:`, e);
+                chartDiv.innerHTML = `<div class="chart-placeholder">Could not render chart. Error: ${e.message}</div>`;
             }
-        });
-    }
+        }
+        
+        function createPlaceholder(chartDivId, message = "Data not available for this chart.") { // Default message
+            const chartDiv = document.getElementById(chartDivId);
+            if (chartDiv) {
+                chartDiv.innerHTML = `<div class="chart-placeholder">${message}</div>`;
+                console.log(`DEBUG: Placeholder set for ${chartDivId}: ${message}`);
+            } else {
+                console.error(`DEBUG: Placeholder target div not found: ${chartDivId}`);
+            }
+        }
+        
+        if (comparisonData && !comparisonData.error) {
+            console.log("DEBUG: JS - Valid comparisonData found, proceeding with rendering.");
+            if(loadingIndicator) loadingIndicator.style.display = 'none';
+            if(initialPlaceholderMsgEl) initialPlaceholderMsgEl.style.display = 'none'; 
 
+            if(kpiContainer) kpiContainer.style.display = 'grid'; 
+            if(chartsGridMain) chartsGridMain.style.display = 'grid';
+            if(regionalTableFullContainer) regionalTableFullContainer.style.display = 'block';
 
-    // Check if comparison data exists and is not null before trying to render charts
-    if (comparisonData && comparisonData !== null) {
-        console.log("Rendering charts with data:", comparisonData); // Debugging
+            // 1. Render KPIs
+            if (kpiContainer && comparisonData.summary_kpis && Array.isArray(comparisonData.summary_kpis)) {
+                kpiContainer.innerHTML = ''; 
+                comparisonData.summary_kpis.forEach(kpi => {
+                    let changeClass = 'neutral';
+                    let pChangeRaw = kpi.percentage_change_raw; 
+                    let pChangeFormatted = kpi.percentage_change_formatted;
 
-        // Render Total Enrollment Chart (Simple Bar Chart)
-        if (comparisonData.total_enrollment && document.getElementById('totalEnrollmentChart')) { // Check if element exists
-             renderBarChart(
-                 'totalEnrollmentChart',
-                 'Total Enrollment Comparison',
-                 comparisonData.total_enrollment
-             );
-        } else if (comparisonData.total_enrollment) {
-             console.warn("Total enrollment data found, but canvas 'totalEnrollmentChart' does not exist.");
-        } else {
-            console.warn("Total enrollment data not found in comparisonData.");
+                    if (pChangeRaw === "N/A" || pChangeRaw === null || pChangeRaw === undefined || (typeof pChangeRaw === 'number' && isNaN(pChangeRaw)) ) {
+                        changeClass = 'na'; 
+                        pChangeFormatted = "N/A"; 
+                    } else if (typeof pChangeRaw === 'number') { 
+                        if (pChangeRaw > 0.005) changeClass = 'positive';
+                        else if (pChangeRaw < -0.005) changeClass = 'negative';
+                    } else if (typeof pChangeFormatted === 'string' && pChangeFormatted.toLowerCase().includes('new')) {
+                        changeClass = 'positive'; 
+                    }
+                    const kpiCard = `
+                        <div class="kpi-card-compare">
+                            <div class="metric-name">${kpi.metric}</div>
+                            <div class="metric-values">
+                                <span class="year-label">${year1LabelGlobal}:</span> ${kpi.year1_value_formatted}<br>
+                                <span class="year-label">${year2LabelGlobal}:</span> ${kpi.year2_value_formatted}
+                            </div>
+                            <div class="metric-change ${changeClass}">Change: ${pChangeFormatted}</div>
+                        </div>
+                    `;
+                    kpiContainer.innerHTML += kpiCard;
+                });
+            } else if (kpiContainer) {
+                 createPlaceholder(kpiContainer.id, 'KPI data is unavailable.'); // Use createPlaceholder for consistency
+            }
+
+            // 2. Enrollment by Sector
+            const sectorData = comparisonData.enrollment_by_sector;
+            if (sectorData && sectorData.categories && sectorData.categories.length > 0) {
+                renderPlotlyChart('enrollment-by-sector-chart', [{
+                    x: sectorData.categories, y: sectorData.year1_values,
+                    name: year1LabelGlobal, type: 'bar', marker: { color: colorYear1 }
+                }, {
+                    x: sectorData.categories, y: sectorData.year2_values,
+                    name: year2LabelGlobal, type: 'bar', marker: { color: colorYear2 }
+                }], { barmode: 'group', yaxis: { title: 'Enrollment Count' } });
+            } else {
+                createPlaceholder('enrollment-by-sector-chart');
+            }
+
+            // 3. Enrollment by Level
+            const levelData = comparisonData.enrollment_by_level;
+            if (levelData && levelData.categories && levelData.categories.length > 0) {
+                renderPlotlyChart('enrollment-by-level-chart', [{
+                    x: levelData.categories, y: levelData.year1_values,
+                    name: year1LabelGlobal, type: 'bar', marker: { color: colorYear1 }
+                }, {
+                    x: levelData.categories, y: levelData.year2_values,
+                    name: year2LabelGlobal, type: 'bar', marker: { color: colorYear2 }
+                }], { barmode: 'group', yaxis: { title: 'Enrollment Count' } });
+            } else {
+                 createPlaceholder('enrollment-by-level-chart');
+            }
+            
+            // 4. Gender Parity Index by Level
+            const gpiLevelData = comparisonData.gpi_by_level_comparison;
+            if (gpiLevelData && gpiLevelData.categories && gpiLevelData.categories.length > 0) {
+                const gpiY1 = gpiLevelData.year1_values.map(v => v === null ? NaN : v); 
+                const gpiY2 = gpiLevelData.year2_values.map(v => v === null ? NaN : v);
+                const allGpiY1NaN = gpiY1.every(v => isNaN(v));
+                const allGpiY2NaN = gpiY2.every(v => isNaN(v));
+
+                if (allGpiY1NaN && allGpiY2NaN) {
+                     createPlaceholder('gpi-by-level-chart', 'GPI by education level data is not applicable (all values are N/A).');
+                } else {
+                    renderPlotlyChart('gpi-by-level-chart', [{
+                        x: gpiLevelData.categories, y: gpiY1,
+                        name: year1LabelGlobal, type: 'bar', marker: { color: colorYear1 }
+                    }, {
+                        x: gpiLevelData.categories, y: gpiY2,
+                        name: year2LabelGlobal, type: 'bar', marker: { color: colorYear2 }
+                    }], { 
+                        barmode: 'group', 
+                        yaxis: { title: 'Gender Parity Index (F/M)', tickformat: '.2f', range: [0, Math.max(1.5, ...gpiY1.filter(v=>!isNaN(v)), ...gpiY2.filter(v=>!isNaN(v))) + 0.1] }, 
+                        shapes: [{ type: 'line', xref: 'paper', x0: 0, x1: 1, yref: 'y', y0: 1, y1: 1, line: { color: 'grey', width: 1, dash: 'dash' }}],
+                        annotations: [{ xref: 'paper', yref: 'y', x: 1.01, y: 1, xanchor: 'left', yanchor: 'middle', text: 'Parity', showarrow: false, font: {color: 'grey', size:10}}]
+                    });
+                }
+            } else {
+                createPlaceholder('gpi-by-level-chart');
+            }
+
+            // 5. Gender Distribution
+            const genderDistData = comparisonData.gender_distribution;
+            if (genderDistData && genderDistData.categories && (genderDistData.year1_values.some(v => v > 0) || genderDistData.year2_values.some(v => v > 0))) {
+                renderPlotlyChart('gender-distribution-chart', [{
+                    x: genderDistData.categories, y: genderDistData.year1_values,
+                    name: year1LabelGlobal, type: 'bar', marker: { color: colorYear1 }
+                }, {
+                    x: genderDistData.categories, y: genderDistData.year2_values,
+                    name: year2LabelGlobal, type: 'bar', marker: { color: colorYear2 }
+                }], { barmode: 'group', yaxis: { title: 'Enrollment Count' } });
+            } else {
+                createPlaceholder('gender-distribution-chart');
+            }
+            
+            // 6. SHS Strand Enrollment
+            const shsEnrollData = comparisonData.shs_strand_enrollment_comparison;
+            if (shsEnrollData && shsEnrollData.strands && shsEnrollData.strands.length > 0) {
+                renderPlotlyChart('shs-strand-enrollment-chart', [{
+                    x: shsEnrollData.strands, y: shsEnrollData.year1_values,
+                    name: year1LabelGlobal, type: 'bar', marker: {color: colorYear1}
+                }, {
+                    x: shsEnrollData.strands, y: shsEnrollData.year2_values,
+                    name: year2LabelGlobal, type: 'bar', marker: {color: colorYear2}
+                }], { barmode: 'group', yaxis: {title: 'Enrollment Count'}, xaxis: {tickangle: -30} });
+            } else {
+                createPlaceholder('shs-strand-enrollment-chart', 'SHS strand enrollment data is unavailable or not applicable for selected years.');
+            }
+
+            // 7. Change in Schools Offering SHS Strands
+            const schoolsChangeData = comparisonData.schools_offering_shs_strands_change;
+            if (schoolsChangeData && schoolsChangeData.strands && schoolsChangeData.strands.length > 0) {
+                 renderPlotlyChart('schools-offering-shs-strands-change-chart', [{
+                    x: schoolsChangeData.strands, y: schoolsChangeData.absolute_changes,
+                    name: 'Change in No. of Schools', type: 'bar', 
+                    marker: { color: schoolsChangeData.absolute_changes.map(val => val === 0 ? colorNeutral : (val > 0 ? colorPositive : colorNegative)) }
+                }], { yaxis: {title: 'Change in Number of Schools'}, xaxis: {tickangle: -30} });
+            } else {
+                 createPlaceholder('schools-offering-shs-strands-change-chart', 'Data on change in schools offering SHS strands is unavailable or not applicable.');
+            }
+            
+            // 8. School Size Distribution
+            const schoolSizeDistData = comparisonData.school_size_distribution_comparison;
+            if (schoolSizeDistData && schoolSizeDistData.categories && schoolSizeDistData.categories.length > 0 && (schoolSizeDistData.year1_counts.some(c => c>0) || schoolSizeDistData.year2_counts.some(c=>c>0))) {
+                renderPlotlyChart('school-size-distribution-chart', [{
+                    x: schoolSizeDistData.categories, y: schoolSizeDistData.year1_counts,
+                    name: year1LabelGlobal, type: 'bar', marker: {color: colorYear1}
+                }, {
+                    x: schoolSizeDistData.categories, y: schoolSizeDistData.year2_counts,
+                    name: year2LabelGlobal, type: 'bar', marker: {color: colorYear2}
+                }], { barmode: 'group', yaxis: {title: 'Number of Schools'}, xaxis: {tickangle: -30, categoryorder: 'array', categoryarray: ["Very Small (<=50)", "Small (51-200)", "Medium (201-500)", "Large (501-1000)", "Very Large (>1000)", "Unknown"] } });
+            } else {
+                 createPlaceholder('school-size-distribution-chart', 'School size distribution data is unavailable or not applicable.');
+            }
+
+            // 9. Regional Enrollment Change
+            const regionalCompData = comparisonData.regional_comparison;
+            if (regionalCompData && regionalCompData.regions && regionalCompData.regions.length > 0) {
+                renderPlotlyChart('regional-enrollment-change-chart', [{
+                    x: regionalCompData.regions, y: regionalCompData.absolute_changes,
+                    type: 'bar', name: 'Absolute Change',
+                    marker: { color: regionalCompData.absolute_changes.map(val => val === 0 ? colorNeutral : (val > 0 ? colorPositive : colorNegative)) } 
+                }], { yaxis: {title: 'Absolute Change in Enrollment'}, xaxis: {tickangle: -30} });
+            } else {
+                createPlaceholder('regional-enrollment-change-chart');
+            }
+
+            // 10. Regional Data Table
+            const regionalTableDiv = document.getElementById('regional-data-table');
+            if (regionalTableDiv && regionalCompData && regionalCompData.detailed_data && regionalCompData.detailed_data.length > 0) {
+                regionalTableDiv.innerHTML = ''; 
+                const table = document.createElement('table');
+                table.className = 'regional-table';
+                const thead = table.createTHead();
+                const headerRow = thead.insertRow();
+                const headers = ['Region', `${year1LabelGlobal} Enrollment`, `${year2LabelGlobal} Enrollment`, 'Absolute Change', '% Change', 'Status'];
+                headers.forEach(text => {
+                    const th = document.createElement('th'); th.textContent = text; headerRow.appendChild(th);
+                });
+                const tbody = table.createTBody();
+                regionalCompData.detailed_data.forEach(item => {
+                    const row = tbody.insertRow();
+                    row.insertCell().textContent = item.region;
+                    row.insertCell().textContent = formatNumber(item.year1_value);
+                    row.insertCell().textContent = formatNumber(item.year2_value);
+                    
+                    const absChangeCell = row.insertCell();
+                    absChangeCell.textContent = formatNumber(item.absolute_change);
+                    absChangeCell.className = item.absolute_change === 0 ? 'change-neutral' : (item.absolute_change > 0 ? 'change-positive' : 'change-negative');
+
+                    const pctChangeCell = row.insertCell();
+                    const pctChangeVal = item.percentage_change; // This is already a float or "N/A" string
+                    pctChangeCell.textContent = (typeof pctChangeVal === 'number' && !isNaN(pctChangeVal)) ? pctChangeVal.toFixed(2) + '%' : 'N/A';
+                    pctChangeCell.className = (typeof pctChangeVal === 'number' && !isNaN(pctChangeVal)) ? (pctChangeVal === 0 ? 'change-neutral' : (pctChangeVal > 0 ? 'change-positive' : 'change-negative')) : 'change-na';
+                    
+                    const statusCell = row.insertCell();
+                    statusCell.textContent = item.status;
+                    statusCell.className = `status-${item.status ? item.status.toLowerCase() : 'unknown'}`;
+                });
+                regionalTableDiv.appendChild(table);
+            } else if (regionalTableDiv) {
+                regionalTableDiv.innerHTML = '<p class="placeholder-message">No detailed regional data to display.</p>';
+            }
+        
+        } else { 
+             console.log("DEBUG: JS - comparisonData is falsy or has an error. Initial placeholder should be shown by Jinja.");
+             if(loadingIndicator) loadingIndicator.style.display = 'none';
+             if(kpiContainer) kpiContainer.style.display = 'none';
+             if(chartsGridMain) chartsGridMain.style.display = 'none';
+             if(regionalTableFullContainer) regionalTableFullContainer.style.display = 'none';
+             
+             const placeholderTarget = document.getElementById('initial-placeholder-msg'); 
+             if(placeholderTarget) { 
+                if (comparisonData && comparisonData.error) {
+                    placeholderTarget.textContent = `Error: ${comparisonData.error}`;
+                } else if ({{ available_years | length }} < 2) { 
+                     placeholderTarget.textContent = "At least two school year datasets are needed for comparison. Please upload more data via the Admin page.";
+                }else {
+                    placeholderTarget.textContent = "Select two different school years and click 'Compare Data' to view the analysis. If you have already done so, there might be an issue loading the data or the selected files might not contain comparable information.";
+                }
+                placeholderTarget.style.display = 'block'; 
+             }
         }
 
-
-        // Render Enrollment by Year Level Chart (Grouped Bar Chart)
-        if (comparisonData.enrollment_by_year_level && document.getElementById('enrollmentByYearLevelChart')) { // Check if element exists
-             renderGroupedBarChart(
-                 'enrollmentByYearLevelChart',
-                 'Enrollment by Year Level Comparison',
-                 comparisonData.enrollment_by_year_level
-             );
-        } else if (comparisonData.enrollment_by_year_level) {
-            console.warn("Enrollment by year level data found, but canvas 'enrollmentByYearLevelChart' does not exist.");
-        } else {
-             console.warn("Enrollment by year level data not found in comparisonData.");
+        const compareBtnSubmit = document.getElementById('compare-button-submit');
+        if (compareBtnSubmit) {
+            compareBtnSubmit.addEventListener('mousedown', function() { if(!this.disabled) this.style.transform = 'scale(0.98)'; });
+            compareBtnSubmit.addEventListener('mouseup', function() { if(!this.disabled) this.style.transform = 'scale(1)'; });
+            compareBtnSubmit.addEventListener('mouseleave', function() { if(!this.disabled) this.style.transform = 'scale(1)'; });
         }
-
-        // Render Enrollment by Region Chart (Grouped Bar Chart)
-        if (comparisonData.enrollment_by_region && document.getElementById('enrollmentByRegionChart')) { // Check if element exists
-             renderGroupedBarChart(
-                 'enrollmentByRegionChart',
-                 'Enrollment by Region Comparison',
-                 comparisonData.enrollment_by_region
-             );
-        } else if (comparisonData.enrollment_by_region) {
-            console.warn("Enrollment by region data found, but canvas 'enrollmentByRegionChart' does not exist.");
-        } else {
-             console.warn("Enrollment by region data not found in comparisonData.");
-        }
-
-
-        // Add rendering logic for other charts here if you add them
-    } else {
-        console.log("No comparison data available or data is null. Not rendering charts."); // Debugging
-    }
-
+    });
 </script>
+
 {% endblock %}

@@ -5,6 +5,7 @@ from data_config import get_dataset_path, fetch_enrollment_records_from_csv, fet
 from data_cleaning import clean_data
 from datetime import datetime
 from report import create_dash_app_report
+from heatmap_app import create_heatmap_dash_app
 import pandas as pd
 import base64
 import uuid
@@ -629,15 +630,17 @@ def compare():
 
 
     # Render the comparison template
+    print(f"Comparison Data being passed to template: {comparison_data}") # ADD THIS LINE
     return render_template('comparison_page.html',
                            available_years=available_years,
                            selected_year_1=selected_year_1,
                            selected_year_2=selected_year_2,
-                           comparison_data=comparison_data # Pass the data structure for template to use
-                          )
+                           comparison_data=comparison_data
+                           )
 
 # Mount Dash app
 dash_app_report = create_dash_app_report(app)
+dash_app_heatmap = create_heatmap_dash_app(app)
 
 if __name__ == "__main__":
     app.run(debug=True)# Triggering auto-reload at 2025-04-22 02:13:27
@@ -649,3 +652,7 @@ if __name__ == "__main__":
 # Triggering auto-reload at 2025-04-23 16:38:01
 # Triggering auto-reload at 2025-04-23 18:44:15
 # Triggering auto-reload at 2025-04-23 19:35:36
+# Triggering auto-reload at 2025-05-14 19:06:26
+# Triggering auto-reload at 2025-05-15 03:10:07
+# Triggering auto-reload at 2025-05-15 03:12:16
+# Triggering auto-reload at 2025-05-15 04:06:22
